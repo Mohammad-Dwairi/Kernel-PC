@@ -50,9 +50,10 @@ const ProductImages = props => {
         }
 
     };
-
+    
+    // TO BE MIGRATED TO actions.js
     const fetchLikedUsers = async () => {
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/likes/${props.product.id}/${userId}.json`);
+        const response = await fetch(`[FIREBASE-LINK]/${props.product.id}/${userId}.json`);
         const resData = await response.json();
     
         if (resData !== null) {
@@ -61,11 +62,11 @@ const ProductImages = props => {
     };
 
     const fetchDislikedUsers = async () => {
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/dislikes/${props.product.id}/${userId}.json`);
+        const response = await fetch(`[FIREBASE-LINK]/${props.product.id}/${userId}.json`);
         const resData = await response.json();
 
         if (resData !== null) {
-            // response !null means that the current user has disliked.
+            // response !null means that the current user disliked the product.
             setIsDisliked(true);
         }
     };
