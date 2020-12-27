@@ -15,7 +15,7 @@ export const fetchProducts = (categoryId) => {
     return async dispatch => {
         try {
             const response = await fetch(
-                `https://kernel-ea898.firebaseio.com/products.json?orderBy="categoryId"&startAt="${categoryId}"&endAt="${categoryId}"`,
+                `[FIREBASE_LINK]?orderBy="categoryId"&startAt="${categoryId}"&endAt="${categoryId}"`,
             );
 
             if (!response.ok) {
@@ -58,7 +58,7 @@ export const fetchSpecialProducts = () => {
 
         // First: fetch Special product ids from firebase.
         try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/specialProducts.json`);
+            const response = await fetch(`[FIREBASE_LINK]`);
             const fetchedData = await response.json();
 
             if (!response.ok) {
@@ -77,7 +77,7 @@ export const fetchSpecialProducts = () => {
         //Second: fetch the products by their ids.
         try {
             for (let id of productIds) {
-                const response = await fetch(`https://kernel-ea898.firebaseio.com/products/${id}.json`);
+                const response = await fetch(`[FIREBASE_LINK]/${id}.json`);
                 const resData = await response.json();
                 products.push(
                     new Product(
@@ -139,12 +139,12 @@ export const addOrder = (cartItems, subtotal, taxes, shippingFees, totalPrice, t
 
             // Get the product by its id, (The cartItem id and product id are the same);
             try {
-                const response = await fetch(`https://kernel-ea898.firebaseio.com/products/${item.id}.json`);
+                const response = await fetch(`[FIREBASE_LINK]/${item.id}.json`);
                 const resData = await response.json();
                 const inStock = resData.quantity;
 
                 // PATCH request to update 'quantity' child of the product.
-                await fetch(`https://kernel-ea898.firebaseio.com/products/${item.id}/.json?auth=${token}`, {
+                await fetch(`[FIREBASE_LINK]/${item.id}/.json?auth=${token}`, {
                     method: 'PATCH',
                     body: JSON.stringify({ quantity: inStock - item.quantity })
                 })
@@ -156,7 +156,7 @@ export const addOrder = (cartItems, subtotal, taxes, shippingFees, totalPrice, t
 
         // Adding the order to firebase
         try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/orders/${userId}.json?auth=${token}`, {
+            const response = await fetch(`[FIREBASE_LINK]/${userId}.json?auth=${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -198,7 +198,7 @@ export const fetchOrders = () => {
 
         try {
             // fetch orders for the current user.
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/orders/${userId}.json`);
+            const response = await fetch(`[FIREBASE_LINK]/${userId}.json`);
             const resData = await response.json();
             for (const key in resData) {
                 loadedOrders.push(
@@ -238,7 +238,7 @@ export const addToWishlist = product => {
 
         // Add product to the user's wishlist.
         try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/wishlist/${userId}.json?auth=${token}`, {
+            const response = await fetch(`[FIREBASE_LINK]/${userId}.json?auth=${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -277,7 +277,7 @@ export const removeFromWishlist = (product, index) => {
 
         // DELETE request to delete spcific product from the user's wishlist.
         try {
-            await fetch(`https://kernel-ea898.firebaseio.com/wishlist/${userId}/${productKey}.json?auth=${token}`, {
+            await fetch(`[FIREBASE_LINK]/${userId}/${productKey}.json?auth=${token}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -305,13 +305,13 @@ export const fetchWishlist = () => {
         // See removeFromWishlist()
 
         try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/wishlist/${userId}.json`);
+            const response = await fetch(`[FIREBASE_LINK]/${userId}.json`);
             const resData = await response.json();
             console.log('resss ', resData);
             for (const key in resData) {
                 const productId = resData[key];
                 console.log(productId);
-                const productResponse = await fetch(`https://kernel-ea898.firebaseio.com/products/${productId}.json`);
+                const productResponse = await fetch(`[FIREBASE-LINK]/${productId}.json`);
                 const product = await productResponse.json();
                 console.log('product', product);
                 loadedProducts.push(
@@ -331,27 +331,13 @@ export const fetchWishlist = () => {
                             product.dislikes
                         )
                     }
-
-                    // new Product(
-                    //     resData[key].id,
-                    //     resData[key].categoryId,
-                    //     resData[key].brand,
-                    //     resData[key].model,
-                    //     resData[key].price,
-                    //     resData[key].color,
-                    //     resData[key].images,
-                    //     resData[key].quantity,
-                    //     resData[key].description,
-                    //     resData[key].likes,
-                    //     resData[key].dislikes
-                    // )
                 );
             }
             dispatch({ type: 'LOAD_WISHLIST', products: loadedProducts })
         }
         catch (err) {
             console.log(err);
-            //throw new Error('An error occured When loading the wishlist');
+            throw new Error('An error occured When loading the wishlist');
         }
     };
 };
@@ -360,7 +346,7 @@ export const signup = (email, userName, password) => {
     return async dispatch => {
 
         // Sign up request
-        const createUser = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const createUser = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -387,7 +373,7 @@ export const signup = (email, userName, password) => {
         const token = newUserData.idToken;
 
         // Second request to update the user name, (did not find a way to do that during the creation of the account).
-        const updateUserName = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const updateUserName = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -403,7 +389,7 @@ export const signup = (email, userName, password) => {
         }
 
         // Third request to send verification link to the user email.
-        const verifyEmail = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const verifyEmail = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             body: JSON.stringify({
                 requestType: 'VERIFY_EMAIL',
@@ -419,7 +405,7 @@ export const signup = (email, userName, password) => {
 
 export const login = (email, password) => {
     return async dispatch => {
-        const login = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const login = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -450,7 +436,7 @@ export const login = (email, password) => {
         const loginData = await login.json();
 
         // Get the user's data to check if the email is verified
-        const user = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const user = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -485,7 +471,7 @@ export const login = (email, password) => {
 
 export const authenticateUser = (token, refreshToken, expirationTime) => {
     return async dispatch => {
-        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -519,7 +505,7 @@ export const authenticateUser = (token, refreshToken, expirationTime) => {
 
 export const resendVerificationLink = async (email, password) => {
     // login request to get idToken
-    const login = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+    const login = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=[FIREBASE-API-KEY]', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -533,7 +519,7 @@ export const resendVerificationLink = async (email, password) => {
     const loginData = await login.json();
 
     // Send new verification link.
-    const verifyEmail = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+    const verifyEmail = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=[FIREBASE-API-KEY]', {
         method: 'POST',
         body: JSON.stringify({
             requestType: 'VERIFY_EMAIL',
@@ -556,7 +542,7 @@ const saveDataToStorage = (token, refreshToken, expirationTime) => {
 
 export const refreshExpiredToken = (refreshToken) => {
     return async (dispatch, getState) => {
-        const response = await fetch('https://securetoken.googleapis.com/v1/token?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const response = await fetch('https://securetoken.googleapis.com/v1/token?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -602,7 +588,7 @@ export const addReview = (review) => {
         }
 
         const productId = getState().reviews.currentProductId;
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/reviews/${productId}.json?auth=${token}`, {
+        const response = await fetch(`[FIREBASE-LINK]/${productId}.json?auth=${token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -617,7 +603,7 @@ export const fetchReviews = () => {
     return async (dispatch, getState) => {
         const productId = getState().reviews.currentProductId;
         console.log('pid', productId);
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/reviews/${productId}.json`);
+        const response = await fetch(`[FIREBASE-LINK]/${productId}.json`);
         if (!response.ok) {
             console.log('something wrong');
         }
@@ -649,7 +635,7 @@ export const like = (numOfLikes, type) => {
         }
 
         if (type === 'add') {
-            await fetch(`https://kernel-ea898.firebaseio.com/likes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(`[FIREBASE-LINK]/${productId}/${userId}.json?auth=${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -658,7 +644,7 @@ export const like = (numOfLikes, type) => {
             });
         }
         else {
-            await fetch(`https://kernel-ea898.firebaseio.com/likes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(`[FIREBASE-LINK]/${productId}/${userId}.json?auth=${token}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -666,7 +652,7 @@ export const like = (numOfLikes, type) => {
             });
         }
 
-        await fetch(`https://kernel-ea898.firebaseio.com/products/${productId}/.json?auth=${token}`, {
+        await fetch(`[FIREBASE-LINK]/${productId}/.json?auth=${token}`, {
             method: 'PATCH',
             body: JSON.stringify({
                 likes: numOfLikes
@@ -694,7 +680,7 @@ export const dislike = (numOfLikes, type) => {
 
         // Add or remove userId to a specific product when pressing dislike.
         if (type === 'add') {
-            await fetch(`https://kernel-ea898.firebaseio.com/dislikes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(`[FIREBASE-LINK]/${productId}/${userId}.json?auth=${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -703,7 +689,7 @@ export const dislike = (numOfLikes, type) => {
             });
         }
         else {
-            await fetch(`https://kernel-ea898.firebaseio.com/dislikes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(`[FIREBASE-LINK]/${productId}/${userId}.json?auth=${token}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
@@ -712,7 +698,7 @@ export const dislike = (numOfLikes, type) => {
         }
 
         // update the number of likes in the product object.
-        await fetch(`https://kernel-ea898.firebaseio.com/products/${productId}/.json?auth=${token}`, {
+        await fetch(`[FIREBASE-LINK]/${productId}/.json?auth=${token}`, {
             method: 'PATCH',
             body: JSON.stringify({
                 dislikes: numOfLikes
@@ -735,7 +721,7 @@ export const changeUserName = (userName) => {
             token = getState().auth.token;
         }
 
-        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=[FIREBASE-API-KEY]', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
