@@ -56,9 +56,6 @@ const HomeScreen = ({ route, navigation }) => {
                 fontSize: 23
             },
             headerRight: () => (
-                // <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-                //     <Item title='Menu' iconName='md-person' onPress={() => { navigation.navigate('UserProfileScreen') }} />
-                // </HeaderButtons>
                 <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
                     <UserNameBadge onPress={() => navigation.navigate('UserProfileScreen')} />
                 </HeaderButtons>
