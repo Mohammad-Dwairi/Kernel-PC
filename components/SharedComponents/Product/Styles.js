@@ -35,6 +35,7 @@ export const productStyle = () => {
             //backgroundColor: 'rgba(0,0,0,0.4)'
         },
         text: {
+            fontSize: Dimensions.get('screen').width * 0.035,
             color: COLORS.text,
             textAlign: 'center',
             fontFamily: 'open-sans-b'

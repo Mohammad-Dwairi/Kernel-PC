@@ -19,6 +19,7 @@ const TopList = props => {
             <AppText style={styles.text}>{props.title}</AppText>
             <FlatList
                 horizontal
+                pagingEnabled={true}
                 showsHorizontalScrollIndicator={false}
                 removeClippedSubviews={true}
                 data={props.list}

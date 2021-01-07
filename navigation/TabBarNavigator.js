@@ -8,12 +8,14 @@ import WishlistScreenNavigator from './WishlistScreenNavigator';
 import { COLORS } from '../constants/colors/colors';
 import { useSelector } from 'react-redux';
 import { Image } from 'react-native';
+import NotifiactionBadge from '../components/SharedComponents/Atomic/NotificationBadge';
 
 const Tab = createBottomTabNavigator();
 
 const TabBarNavigator = () => {
 
     const darkMode = useSelector(state => state.darkMode.isDark);
+    const cartLength = useSelector(state => state.cart.cart).length;
     return (
         <Tab.Navigator
 
@@ -35,14 +37,15 @@ const TabBarNavigator = () => {
 
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
+
                     if (route.name === 'Home')
                         return <Image source={require('../assets/adaptive-icon.png')} style={{width: 50, height: 50}}/>;
                     if (route.name === 'Shopping Cart')
-                        return <Ionicons name='ios-cart' color={color} size={size} />;
+                        return <NotifiactionBadge number={cartLength}><Ionicons name='ios-cart' color={color} size={size} /></NotifiactionBadge>;
                     if (route.name === 'Orders History')
                         return <Entypo name='archive' color={color} size={size} />;
                     if (route.name === 'Wishlist')
-                        return <AntDesign name='hearto' color={color} size={size} />
+                        return focused ? <AntDesign name='heart' color={color} size={size} /> : <AntDesign name='hearto' color={color} size={size} />;
                 }
             })}
         >
