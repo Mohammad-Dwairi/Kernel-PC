@@ -63,7 +63,7 @@ const Buttons = props => {
                 text1: 'Removed from your Wish-List',
                 text2: 'You can view your wished products in the wishlist tab.'
             });
-            dispatch(removeFromWishlist(props.product, wishlistProductIndex));
+            dispatch(removeFromWishlist(wishlistProductIndex));
         }
         else {
             Toast.show({

@@ -24,7 +24,7 @@ const AddToWishlistButton = props => {
                 text2: 'You can view your wished products in the wishlist tab.'
             });
             //console.log(props.product);
-            dispatch(removeFromWishlist(props.product, index))
+            dispatch(removeFromWishlist(index))
         }
         else {
             Toast.show({

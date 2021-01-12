@@ -1,6 +1,7 @@
 import Order from '../../models/Order';
 import Product from '../../models/Product';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addOrderLink, addReviewLink, addToWishlistLink, dislikeLink, fetchOrdersLink, fetchProductLink, fetchProductsLink, fetchReviewsLink, fetchSpecialProductsIdsLink, fetchWishlistKeysLink, fetchLikedUsersLink, likeLink, loginLink, lookupUserLink, refreshTokenLink, removeFromWishlistLink, signupLink, updateProductLink, updateUserDataLink, verificationLink, fetchDislikedUsersLink } from './firebaseLinks';
 
 export const setDark = (value) => {
     try {
@@ -13,40 +14,33 @@ export const setDark = (value) => {
 
 export const fetchProducts = (categoryId) => {
     return async dispatch => {
-        try {
-            const response = await fetch(
-                `https://kernel-ea898.firebaseio.com/products.json?orderBy="categoryId"&startAt="${categoryId}"&endAt="${categoryId}"`,
+        const response = await fetch(fetchProductsLink(categoryId));
+
+        if (!response.ok) {
+            throw new Error('Something went wrong when loading this category, try again later');
+        }
+
+        const fetchedData = await response.json();
+
+        const products = [];
+        for (let key in fetchedData) {
+            products.push(
+                new Product(
+                    key,
+                    fetchedData[key].categoryId,
+                    fetchedData[key].brand,
+                    fetchedData[key].model,
+                    fetchedData[key].price,
+                    fetchedData[key].color,
+                    fetchedData[key].images,
+                    fetchedData[key].quantity,
+                    fetchedData[key].description,
+                    fetchedData[key].likes,
+                    fetchedData[key].dislikes
+                )
             );
-
-            if (!response.ok) {
-                throw new Error('Something went wrong when loading this category products, try again later');
-            }
-
-            const fetchedData = await response.json();
-            const products = [];
-            for (let key in fetchedData) {
-                products.push(
-                    new Product(
-                        key,
-                        fetchedData[key].categoryId,
-                        fetchedData[key].brand,
-                        fetchedData[key].model,
-                        fetchedData[key].price,
-                        fetchedData[key].color,
-                        fetchedData[key].images,
-                        fetchedData[key].quantity,
-                        fetchedData[key].description,
-                        fetchedData[key].likes,
-                        fetchedData[key].dislikes
-                    )
-                );
-            }
-            dispatch({ type: 'SET_PRODUCTS', products: products });
         }
-        catch (err) {
-            throw new Error('Something went wrong when loading this category products, try again later');
-        }
-
+        dispatch({ type: 'SET_PRODUCTS', products: products });
     };
 };
 
@@ -57,52 +51,42 @@ export const fetchSpecialProducts = () => {
         const products = [];
 
         // First: fetch Special product ids from firebase.
-        try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/specialProducts.json`);
-            const fetchedData = await response.json();
 
-            if (!response.ok) {
-                throw new Error('Something went wrong when loading special products.');
-            }
+        const response = await fetch(fetchSpecialProductsIdsLink);
+        const fetchedData = await response.json();
 
-            for (let key in fetchedData) {
-                productIds.push(fetchedData[key]);
-            }
-        }
-        catch (err) {
-            console.log(err);
+        if (!response.ok) {
             throw new Error('Something went wrong when loading special products.');
         }
 
+        for (let key in fetchedData) {
+            productIds.push(fetchedData[key]);
+        }
+
         //Second: fetch the products by their ids.
-        try {
-            for (let id of productIds) {
-                const response = await fetch(`https://kernel-ea898.firebaseio.com/products/${id}.json`);
-                const resData = await response.json();
-                products.push(
-                    new Product(
-                        id,
-                        resData.categoryId,
-                        resData.brand,
-                        resData.model,
-                        resData.price,
-                        resData.color,
-                        resData.images,
-                        resData.quantity,
-                        resData.description,
-                        resData.likes,
-                        resData.dislikes
-                    )
-                );
-            }
-            dispatch({ type: 'SET_SPECIAL_PRODUCTS', specialProducts: products });
+        for (let id of productIds) {
+            const response = await fetch(fetchProductLink(id));
+            const resData = await response.json();
+            products.push(
+                new Product(
+                    id,
+                    resData.categoryId,
+                    resData.brand,
+                    resData.model,
+                    resData.price,
+                    resData.color,
+                    resData.images,
+                    resData.quantity,
+                    resData.description,
+                    resData.likes,
+                    resData.dislikes
+                )
+            );
         }
-        catch (err) {
-            console.log(err);
-            throw new Error('Something went wrong when setting special products.');
-        }
+        dispatch({ type: 'SET_SPECIAL_PRODUCTS', specialProducts: products });
     };
 };
+
 export const addToCart = product => {
     return { type: 'ADD_TO_CART', product: product };
 };
@@ -118,18 +102,18 @@ export const decreaseQuantity = (index) => {
 export const addOrder = (cartItems, subtotal, taxes, shippingFees, totalPrice, totalQuantity) => {
     return async (dispatch, getState) => {
 
-        // Getting user token and id from AuthReducer.
-        let token = getState().auth.token;
+        let token = getState().auth.token;  // Getting user token and id from AuthReducer.
         const userId = getState().auth.userId;
         const userName = getState().auth.userName;
         const email = getState().auth.email;
         const refershToken = getState().auth.refershToken;
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
-        // To store order's Date.
-        const date = new Date();
+
+        const date = new Date(); // store order's Date.
 
         if (expiryDate <= new Date()) {
+            // if the token is expired; request a refresh token
             dispatch(refreshExpiredToken(refershToken, email, userName));
             token = getState().auth.token;
         }
@@ -138,44 +122,31 @@ export const addOrder = (cartItems, subtotal, taxes, shippingFees, totalPrice, t
         cartItems.forEach(async item => {
 
             // Get the product by its id, (The cartItem id and product id are the same);
-            try {
-                const response = await fetch(`https://kernel-ea898.firebaseio.com/products/${item.id}.json`);
-                const resData = await response.json();
-                const inStock = resData.quantity;
+            const response = await fetch(fetchProductLink(item.id));
 
-                // PATCH request to update 'quantity' child of the product.
-                await fetch(`https://kernel-ea898.firebaseio.com/products/${item.id}/.json?auth=${token}`, {
-                    method: 'PATCH',
-                    body: JSON.stringify({ quantity: inStock - item.quantity })
-                })
-            }
-            catch (err) {
+            if (!response.ok) {
                 throw new Error('An Error occured when trying to add the order. try again later');
             }
+
+            const resData = await response.json();
+            const inStock = resData.quantity;
+
+            // PATCH request to update 'quantity' child of the product.
+            await fetch(updateProductLink(item.id, token), {
+                method: 'PATCH',
+                body: JSON.stringify({ quantity: inStock - item.quantity })
+            });
         });
 
         // Adding the order to firebase
-        try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/orders/${userId}.json?auth=${token}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    cartItems: cartItems,
-                    subtotal: subtotal,
-                    taxes: taxes,
-                    shippingFees: shippingFees,
-                    totalPrice: totalPrice,
-                    totalQuantity: totalQuantity,
-                    date: date.toISOString()
-                })
-            });
-
-            const resData = await response.json();
-            dispatch({
-                type: 'ADD_ORDER',
-                id: resData.name,
+        const response = await fetch(addOrderLink(userId, token), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                userName: userName,
+                email: email,
                 cartItems: cartItems,
                 subtotal: subtotal,
                 taxes: taxes,
@@ -183,49 +154,62 @@ export const addOrder = (cartItems, subtotal, taxes, shippingFees, totalPrice, t
                 totalPrice: totalPrice,
                 totalQuantity: totalQuantity,
                 date: date.toISOString()
-            });
-        }
-        catch (err) {
-            throw new Error('Something went wrong!');
-        }
+            })
+        });
+
+        const resData = await response.json();
+        dispatch({
+            type: 'ADD_ORDER',
+            id: resData.name,
+            cartItems: cartItems,
+            subtotal: subtotal,
+            taxes: taxes,
+            shippingFees: shippingFees,
+            totalPrice: totalPrice,
+            totalQuantity: totalQuantity,
+            date: date.toISOString()
+        });
     };
 };
 
 export const fetchOrders = () => {
     return async (dispatch, getState) => {
+
         const userId = getState().auth.userId;
         const loadedOrders = [];
 
-        try {
-            // fetch orders for the current user.
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/orders/${userId}.json`);
-            const resData = await response.json();
-            for (const key in resData) {
-                loadedOrders.push(
-                    new Order(
-                        key,
-                        resData[key].cartItems,
-                        resData[key].subtotal,
-                        resData[key].taxes,
-                        resData[key].shippingFees,
-                        resData[key].totalPrice,
-                        resData[key].totalQuantity,
-                        resData[key].date
-                    )
-                );
-            }
-            dispatch({ type: 'LOAD_ORDERS', orders: loadedOrders })
+        // fetch orders for the current user.
+        const response = await fetch(fetchOrdersLink(userId));
+        if (!response.ok) {
+            throw new Error('Something went wrong when loading your orders, please try again later');
         }
-        catch (err) {
-            throw new Error('Something Went Wrong When Fetching Orders');
+
+        const resData = await response.json();
+
+        for (const key in resData) {
+            loadedOrders.push(
+                new Order(
+                    key,
+                    resData[key].cartItems,
+                    resData[key].subtotal,
+                    resData[key].taxes,
+                    resData[key].shippingFees,
+                    resData[key].totalPrice,
+                    resData[key].totalQuantity,
+                    resData[key].date
+                )
+            );
         }
+        dispatch({ type: 'LOAD_ORDERS', orders: loadedOrders })
     };
 };
 
 export const addToWishlist = product => {
     return async (dispatch, getState) => {
+
         let token = getState().auth.token;
         const userId = getState().auth.userId;
+
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
 
@@ -237,34 +221,39 @@ export const addToWishlist = product => {
         }
 
         // Add product to the user's wishlist.
-        try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/wishlist/${userId}.json?auth=${token}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(product.id)
-            });
-            const resData = await response.json();
-            console.log(resData);
-            dispatch({
-                type: 'ADD_TO_WISHLIST',
-                product: { key: resData.name, product: product },
-                //key: resData.name Add the product's id (given to it from the firebase) to the reducer in order
-            })
+        const response = await fetch(addToWishlistLink(userId, token), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(product.id)
+        });
+
+        if (!response.ok) {
+            throw new Error('Something went wrong when adding the product to your wishlist, try again later');
         }
-        catch (err) {
-            console.log(err);
-            //throw new Error('An Error occured when adding to wishlist, try again later.');
-        }
+
+        const resData = await response.json();
+
+        dispatch({
+            type: 'ADD_TO_WISHLIST',
+
+            // The product is stored under new key in the firebase
+            // we need this "key" to use it in removeFromWishlistLink link.
+            // So we store the key with the product in the wishlist reducer
+            product: { key: resData.name, product: product }
+        })
     };
 };
 
-export const removeFromWishlist = (product, index) => {
+export const removeFromWishlist = (index) => {
     return async (dispatch, getState) => {
+
         let token = getState().auth.token;
         const userId = getState().auth.userId;
+
         const productKey = getState().wishlist.products[index].key;
+
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
 
@@ -276,23 +265,21 @@ export const removeFromWishlist = (product, index) => {
         }
 
         // DELETE request to delete spcific product from the user's wishlist.
-        try {
-            await fetch(`https://kernel-ea898.firebaseio.com/wishlist/${userId}/${productKey}.json?auth=${token}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            });
-            dispatch({
-                type: 'REMOVE_FROM_WISHLIST',
-                index: index
-            });
-        }
-        catch (err) {
-            console.log(err);
-            throw new Error('An error occured when trying to remove the product from your wishlist, please try again later');
+        const response = await fetch(removeFromWishlistLink(userId, productKey, token), {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("Something went wrong when removing the product from your wishlist, try again later");
         }
 
+        dispatch({
+            type: 'REMOVE_FROM_WISHLIST',
+            index: index
+        });
     };
 };
 
@@ -300,67 +287,57 @@ export const fetchWishlist = () => {
     return async (dispatch, getState) => {
 
         const userId = getState().auth.userId;
+
         const loadedProducts = [];
-        //const keys = []; Store the products keys (given to them from firebase) to use them if the user wants to delete from wishlist.
-        // See removeFromWishlist()
 
-        try {
-            const response = await fetch(`https://kernel-ea898.firebaseio.com/wishlist/${userId}.json`);
-            const resData = await response.json();
-            console.log('resss ', resData);
-            for (const key in resData) {
-                const productId = resData[key];
-                console.log(productId);
-                const productResponse = await fetch(`https://kernel-ea898.firebaseio.com/products/${productId}.json`);
-                const product = await productResponse.json();
-                console.log('product', product);
-                loadedProducts.push(
-                    {
-                        key: key,
-                        product: new Product(
-                            productId,
-                            product.categoryId,
-                            product.brand,
-                            product.model,
-                            product.price,
-                            product.color,
-                            product.images,
-                            product.quantity,
-                            product.description,
-                            product.likes,
-                            product.dislikes
-                        )
-                    }
+        // get the wishlist products keys (the product is a node labeled by the orginal ( id ) under each key)
+        const response = await fetch(fetchWishlistKeysLink(userId));
 
-                    // new Product(
-                    //     resData[key].id,
-                    //     resData[key].categoryId,
-                    //     resData[key].brand,
-                    //     resData[key].model,
-                    //     resData[key].price,
-                    //     resData[key].color,
-                    //     resData[key].images,
-                    //     resData[key].quantity,
-                    //     resData[key].description,
-                    //     resData[key].likes,
-                    //     resData[key].dislikes
-                    // )
-                );
+        if (!response.ok) {
+            throw new Error('Something went wrong when loading your wishlist, try again later');
+        }
+
+        const resData = await response.json();
+
+        // iterate over the keys, get the product id, make a request with the product id to get it form products node
+        for (const key in resData) {
+            const productId = resData[key];
+            const productResponse = await fetch(fetchProductLink(productId));
+
+            if (!productResponse.ok) {
+                throw new Error('Something went wrong when loading your wishlist, try again later');
             }
-            dispatch({ type: 'LOAD_WISHLIST', products: loadedProducts })
+
+            const product = await productResponse.json();
+            loadedProducts.push(
+                {
+                    key: key,
+                    product: new Product(
+                        productId,
+                        product.categoryId,
+                        product.brand,
+                        product.model,
+                        product.price,
+                        product.color,
+                        product.images,
+                        product.quantity,
+                        product.description,
+                        product.likes,
+                        product.dislikes
+                    )
+                }
+
+            );
         }
-        catch (err) {
-            console.log(err);
-            //throw new Error('An error occured When loading the wishlist');
-        }
+
+        dispatch({ type: 'LOAD_WISHLIST', products: loadedProducts })
     };
 };
 
 export const signup = (email, userName, password) => {
     return async dispatch => {
-
         // Sign up request
-        const createUser = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const createUser = await fetch(signupLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -387,7 +364,7 @@ export const signup = (email, userName, password) => {
         const token = newUserData.idToken;
 
         // Second request to update the user name, (did not find a way to do that during the creation of the account).
-        const updateUserName = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const updateUserName = await fetch(updateUserDataLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -403,7 +380,7 @@ export const signup = (email, userName, password) => {
         }
 
         // Third request to send verification link to the user email.
-        const verifyEmail = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const verifyEmail = await fetch(verificationLink, {
             method: 'POST',
             body: JSON.stringify({
                 requestType: 'VERIFY_EMAIL',
@@ -419,7 +396,8 @@ export const signup = (email, userName, password) => {
 
 export const login = (email, password) => {
     return async dispatch => {
-        const login = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+
+        const login = await fetch(loginLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -445,12 +423,12 @@ export const login = (email, password) => {
             else {
                 throw new Error('Invalid email or password');
             }
-
         }
+
         const loginData = await login.json();
 
         // Get the user's data to check if the email is verified
-        const user = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const user = await fetch(lookupUserLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -462,11 +440,13 @@ export const login = (email, password) => {
 
         const userData = await user.json();
 
-        if (userData.users[0].emailVerified) {
+        const isVerified = userData.users[0].emailVerified;
+
+        if (isVerified) {
             const expirationTime = new Date(new Date().getTime() + parseInt(loginData.expiresIn) * 1000);
             dispatch({
                 type: 'SIGNIN',
-                isVerified: userData.users[0].emailVerified,
+                isVerified: isVerified,
                 token: loginData.idToken,
                 refreshToken: loginData.refreshToken,
                 expirationTime: expirationTime,
@@ -479,13 +459,15 @@ export const login = (email, password) => {
         else {
             throw new Error('Email is not verified');
         }
-
     };
 };
 
 export const authenticateUser = (token, refreshToken, expirationTime) => {
+    // used to auto-login user (see StartupScreen)
     return async dispatch => {
-        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+
+        // get user data
+        const response = await fetch(lookupUserLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -495,12 +477,13 @@ export const authenticateUser = (token, refreshToken, expirationTime) => {
             })
         });
 
-        if (!response.ok){
+        if (!response.ok) {
             const errorRes = await response.json();
             throw new Error(errorRes.error.message);
         }
 
         const resData = await response.json();
+
         const userName = resData.users[0].displayName;
         const email = resData.users[0].email;
         const userId = resData.users[0].localId;
@@ -518,8 +501,9 @@ export const authenticateUser = (token, refreshToken, expirationTime) => {
 };
 
 export const resendVerificationLink = async (email, password) => {
+
     // login request to get idToken
-    const login = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+    const login = await fetch(loginLink, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -530,10 +514,11 @@ export const resendVerificationLink = async (email, password) => {
             returnSecureToken: true
         })
     });
+
     const loginData = await login.json();
 
     // Send new verification link.
-    const verifyEmail = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+    const verifyEmail = await fetch(verificationLink, {
         method: 'POST',
         body: JSON.stringify({
             requestType: 'VERIFY_EMAIL',
@@ -547,6 +532,7 @@ export const resendVerificationLink = async (email, password) => {
 };
 
 const saveDataToStorage = (token, refreshToken, expirationTime) => {
+    // Data stored locally in the mobile storage. typically used to auto-login the user or request refresh token.
     AsyncStorage.setItem('userData', JSON.stringify({
         token: token,
         refreshToken: refreshToken,
@@ -555,8 +541,9 @@ const saveDataToStorage = (token, refreshToken, expirationTime) => {
 };
 
 export const refreshExpiredToken = (refreshToken) => {
-    return async (dispatch, getState) => {
-        const response = await fetch('https://securetoken.googleapis.com/v1/token?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+    return async dispatch => {
+
+        const response = await fetch(refreshTokenLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -566,21 +553,23 @@ export const refreshExpiredToken = (refreshToken) => {
                 refresh_token: refreshToken
             })
         });
+
         if (!response.ok) {
             const errorRes = await response.json();
             throw new Error(errorRes.error.message);
         }
+
         const resData = await response.json();
+
         const expirationTime = new Date(new Date().getTime() + parseInt(resData['expires_in']) * 1000);
         saveDataToStorage(resData['id_token'], resData['refresh_token'], expirationTime);
 
-        console.log('refreshing', resData);
-        console.log('Old refreshToken', refreshToken);
-        console.log('New refreshToken', resData['refresh_token']);
         try {
+            // got a new token, saved locally in the device to be used next time the user login in if it is not expired yet
+            // now dispatch authenticateUser action with a new token;
             dispatch(authenticateUser(resData['id_token'], refreshToken, expirationTime));
         }
-        catch(err) {
+        catch (err) {
             throw new Error(err.message);
         }
     };
@@ -589,8 +578,11 @@ export const refreshExpiredToken = (refreshToken) => {
 
 export const addReview = (review) => {
     return async (dispatch, getState) => {
-        review.date = review.formattedDate;
+
+        review.date = review.formattedDate; // replace normal js date with formatted date (see Review model)
+
         let token = getState().auth.token;
+
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
 
@@ -602,42 +594,54 @@ export const addReview = (review) => {
         }
 
         const productId = getState().reviews.currentProductId;
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/reviews/${productId}.json?auth=${token}`, {
+
+        const response = await fetch(addReviewLink(productId, token), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(review)
         });
+
+        if (!response.ok) {
+            throw new Error('An error occured when adding your review, please try again later');
+        }
+
         dispatch({ type: 'ADD_REVIEW', review: review });
     };
 };
 
 export const fetchReviews = () => {
     return async (dispatch, getState) => {
+
         const productId = getState().reviews.currentProductId;
-        console.log('pid', productId);
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/reviews/${productId}.json`);
+
+        const response = await fetch(fetchReviewsLink(productId));
         if (!response.ok) {
-            console.log('something wrong');
+            throw new Error("An error occured while loading the reviews, try again later");
         }
+
         const resData = await response.json();
-        console.log(resData);
+
         let reviews = [];
         for (let key in resData) {
             reviews.push(resData[key]);
         }
-        console.log('REVIEWS: ', reviews);
+
         dispatch({ type: 'LOAD_REVIEWS', reviews: reviews });
     };
 };
 
 export const like = (numOfLikes, type) => {
     return async (dispatch, getState) => {
+
         const userId = getState().auth.userId;
         const productId = getState().reviews.currentProductId;
+
         let token = getState().auth.token;
+
         const userName = getState().auth.userName;
+
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
 
@@ -649,26 +653,26 @@ export const like = (numOfLikes, type) => {
         }
 
         if (type === 'add') {
-            await fetch(`https://kernel-ea898.firebaseio.com/likes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(likeLink(productId, userId, token), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(userName)
             });
-            dispatch({type: 'SET_LIKED', isLiked: true});
+            dispatch({ type: 'SET_LIKED', isLiked: true });
         }
         else {
-            await fetch(`https://kernel-ea898.firebaseio.com/likes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(likeLink(productId, userId, token), {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
             });
-            dispatch({type: 'SET_LIKED', isLiked: false});
+            dispatch({ type: 'SET_LIKED', isLiked: false });
         }
 
-        await fetch(`https://kernel-ea898.firebaseio.com/products/${productId}/.json?auth=${token}`, {
+        await fetch(updateProductLink(productId, token), {
             method: 'PATCH',
             body: JSON.stringify({
                 likes: numOfLikes
@@ -680,10 +684,14 @@ export const like = (numOfLikes, type) => {
 
 export const dislike = (numOfLikes, type) => {
     return async (dispatch, getState) => {
+
         const userId = getState().auth.userId;
         const productId = getState().reviews.currentProductId;
+
         let token = getState().auth.token;
+
         const userName = getState().auth.userName;
+
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
 
@@ -696,27 +704,27 @@ export const dislike = (numOfLikes, type) => {
 
         // Add or remove userId to a specific product when pressing dislike.
         if (type === 'add') {
-            await fetch(`https://kernel-ea898.firebaseio.com/dislikes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(dislikeLink(productId, userId, token), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(userName)
             });
-            dispatch({type: 'SET_DISLIKED', isDisliked: true});
+            dispatch({ type: 'SET_DISLIKED', isDisliked: true });
         }
         else {
-            await fetch(`https://kernel-ea898.firebaseio.com/dislikes/${productId}/${userId}.json?auth=${token}`, {
+            await fetch(dislikeLink(productId, userId, token), {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
             });
-            dispatch({type: 'SET_DISLIKED', isDisliked: false});
+            dispatch({ type: 'SET_DISLIKED', isDisliked: false });
         }
 
         // update the number of likes in the product object.
-        await fetch(`https://kernel-ea898.firebaseio.com/products/${productId}/.json?auth=${token}`, {
+        await fetch(updateProductLink(productId, token), {
             method: 'PATCH',
             body: JSON.stringify({
                 dislikes: numOfLikes
@@ -728,39 +736,46 @@ export const dislike = (numOfLikes, type) => {
 
 export const fetchLikedUsers = () => {
     return async (dispatch, getState) => {
+
         const userId = getState().auth.userId;
         const productId = getState().reviews.currentProductId;
 
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/likes/${productId}/${userId}.json`);
+        const response = await fetch(fetchLikedUsersLink(productId, userId));
+
         const resData = await response.json();
-    
+
         if (resData !== null) {
-            console.log("User does liked");
-            dispatch({type: "FETCH_LIKED", isLiked: true});
+            dispatch({ type: "FETCH_LIKED", isLiked: true });
         }
-        dispatch({type: "FETCH_LIKED", isLiked: false});
+
+        dispatch({ type: "FETCH_LIKED", isLiked: false });
     };
-        
+
 };
 
 export const fetchDislikedUsers = () => {
     return async (dispatch, getState) => {
+
         const userId = getState().auth.userId;
         const productId = getState().reviews.currentProductId;
-        const response = await fetch(`https://kernel-ea898.firebaseio.com/dislikes/${productId}/${userId}.json`);
+
+        const response = await fetch(fetchDislikedUsersLink(productId, userId));
         const resData = await response.json();
-    
+
         if (resData !== null) {
-            // response !null means that the current user disliked the product.
-            dispatch({type: "FETCH_DISLIKED", isDisliked: true});
+            // response !null means that the current user has disliked the product.
+            dispatch({ type: "FETCH_DISLIKED", isDisliked: true });
         }
-        dispatch({type: "FETCH_DISLIKED", isDisliked: false});
-    };  
+
+        dispatch({ type: "FETCH_DISLIKED", isDisliked: false });
+    };
 };
 
 export const changeUserName = (userName) => {
     return async (dispatch, getState) => {
-        const token = getState().auth.token;
+
+        let token = getState().auth.token;
+
         const expirationTime = getState().auth.expirationTime;
         const expiryDate = new Date(expirationTime);
 
@@ -771,7 +786,7 @@ export const changeUserName = (userName) => {
             token = getState().auth.token;
         }
 
-        const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAJpcnH04sJdXWJ986bb-DQ3O-O1ARn6q0', {
+        const response = await fetch(updateUserDataLink, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -783,11 +798,11 @@ export const changeUserName = (userName) => {
                 returnSecureToken: true
             })
         });
-        if (response.ok) {
-            console.log('DISPATCHING USER NAME')
-            dispatch({ type: 'CHANGE_USER_NAME', userName: userName });
-            console.log('Finish USER NAME')
+
+        if (!response.ok) {
+            throw new Error('An error occured while changing your user name, please try again later');
         }
 
+        dispatch({ type: 'CHANGE_USER_NAME', userName: userName });
     };
 }; 

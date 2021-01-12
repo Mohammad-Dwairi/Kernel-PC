@@ -10,8 +10,8 @@ import { dislike, fetchDislikedUsers, fetchLikedUsers, like } from '../../store/
 const ReactionButtons = props => {
     
     // States to control like and dislike buttons and thier numbers.
-    //const [isLiked, setIsLiked] = useState(liked);
-    const isLiked = useSelector(state => state.reviews.isLiked);
+    const liked = useSelector(state => state.reviews.isLiked);
+    const [isLiked, setIsLiked] = useState(liked);
     const [likes, setLikes] = useState(props.numberOfLikes);
 
     //const [isDisliked, setIsDisliked] = useState(disliked);
