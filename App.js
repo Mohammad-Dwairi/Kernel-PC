@@ -42,7 +42,7 @@ export default function App() {
     orders: OrdersReducer,
     wishlist: WishlistReducer,
     auth: AuthReducer,
-    reviews: ReviewsReducer
+    reviews: ReviewsReducer,
   }
   );
 

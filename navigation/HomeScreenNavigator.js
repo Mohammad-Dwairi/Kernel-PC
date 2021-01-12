@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { COLORS } from '../constants/colors/colors';
 import { Dimensions, Image, Platform, View } from 'react-native';
 import AppText from '../components/SharedComponents/Atomic/AppText';
-import ReviewsNavigator from './ReviewsNavigator';
+import ProductNavigator from './ProductNavigator';
 import UserProfileScreen from '../screens/UserProfileScreen';
 
 const Stack = createStackNavigator();
@@ -47,8 +47,8 @@ const HomeScreenNavigator = () => {
                 options={defaultScreenOptions}
             />
             <Stack.Screen
-                name='Reviews'
-                component={ReviewsNavigator}
+                name='ProductScreen'
+                component={ProductNavigator}
                 options={defaultScreenOptions}
             />
             <Stack.Screen

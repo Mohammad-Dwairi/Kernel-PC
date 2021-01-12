@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { COLORS } from '../constants/colors/colors';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import { Dimensions } from 'react-native';
-import ReviewsNavigator from './ReviewsNavigator';
+import ProductNavigator from './ProductNavigator';
 
 const Stack = createStackNavigator();
 
@@ -38,8 +38,8 @@ const WishlistScreenNavigator = () => {
                 options={defaultScreenOptions}
             />
             <Stack.Screen
-                name='Reviews'
-                component={ReviewsNavigator}
+                name='ProductScreen'
+                component={ProductNavigator}
                 options={defaultScreenOptions}
             />
             <Stack.Screen

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import TopList from '../components/HomeScreenComponents/TopHorizontalList/TopList';
 import Grid from '../components/HomeScreenComponents/CategoriesGrid/Grid';
 import Container from '../components/SharedComponents/Atomic/Container';
-import { fetchSpecialProducts, fetchWishlist } from '../store/actions/actions';
+import { fetchDislikedProducts, fetchLikedProducts, fetchSpecialProducts, fetchWishlist } from '../store/actions/actions';
 import UserNameBadge from '../components/SharedComponents/Atomic/UserNameBadge';
 import { COLORS } from '../constants/colors/colors';
 
@@ -36,6 +36,14 @@ const HomeScreen = ({ route, navigation }) => {
 
     useEffect(() => {
         loadWishlist();
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(fetchLikedProducts());
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(fetchDislikedProducts());
     }, [dispatch]);
 
     // React-Navigation listener,

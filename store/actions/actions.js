@@ -1,7 +1,31 @@
 import Order from '../../models/Order';
 import Product from '../../models/Product';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addOrderLink, addReviewLink, addToWishlistLink, dislikeLink, fetchOrdersLink, fetchProductLink, fetchProductsLink, fetchReviewsLink, fetchSpecialProductsIdsLink, fetchWishlistKeysLink, fetchLikedUsersLink, likeLink, loginLink, lookupUserLink, refreshTokenLink, removeFromWishlistLink, signupLink, updateProductLink, updateUserDataLink, verificationLink, fetchDislikedUsersLink } from './firebaseLinks';
+import {
+    addOrderLink,
+    addReviewLink,
+    addToWishlistLink,
+    dislikeLink,
+    fetchOrdersLink,
+    fetchProductLink,
+    fetchProductsLink,
+    fetchReviewsLink,
+    fetchSpecialProductsIdsLink,
+    fetchWishlistKeysLink,
+    fetchLikedProductsLink,
+    likeLink,
+    loginLink,
+    lookupUserLink,
+    refreshTokenLink,
+    removeFromWishlistLink,
+    signupLink,
+    updateProductLink,
+    updateUserDataLink,
+    verificationLink,
+    fetchDislikedProductsLink,
+    unLikeLink,
+    unDislikeLink
+} from './firebaseLinks';
 
 export const setDark = (value) => {
     try {
@@ -632,11 +656,11 @@ export const fetchReviews = () => {
     };
 };
 
-export const like = (numOfLikes, type) => {
+export const like = (numOfLikes, type, firebaseKey) => {
     return async (dispatch, getState) => {
 
         const userId = getState().auth.userId;
-        const productId = getState().reviews.currentProductId;
+        const productId = getState().reviews.currentProductId; //remove
 
         let token = getState().auth.token;
 
@@ -653,23 +677,30 @@ export const like = (numOfLikes, type) => {
         }
 
         if (type === 'add') {
-            await fetch(likeLink(productId, userId, token), {
+            const response = await fetch(likeLink(token), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(userName)
+                body: JSON.stringify({
+                    productId: productId,
+                    userId: userId,
+                    userName: userName
+                })
             });
-            dispatch({ type: 'SET_LIKED', isLiked: true });
+            const resData = await response.json();
+            console.log("@@@@22", resData);
+            const firebaseKey = resData.name;
+            dispatch({ type: 'ADD_LIKED_PRODUCT', likedProduct: { firebaseKey: firebaseKey, productId: productId } });
         }
         else {
-            await fetch(likeLink(productId, userId, token), {
+            await fetch(unLikeLink(firebaseKey, token), {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
             });
-            dispatch({ type: 'SET_LIKED', isLiked: false });
+            dispatch({ type: 'REMOVE_LIKED_PRODUCT', productId: productId });
         }
 
         await fetch(updateProductLink(productId, token), {
@@ -682,11 +713,11 @@ export const like = (numOfLikes, type) => {
     };
 };
 
-export const dislike = (numOfLikes, type) => {
+export const dislike = (numOfDislikes, type, firebaseKey) => {
     return async (dispatch, getState) => {
 
         const userId = getState().auth.userId;
-        const productId = getState().reviews.currentProductId;
+        const productId = getState().reviews.currentProductId; //remove
 
         let token = getState().auth.token;
 
@@ -702,72 +733,77 @@ export const dislike = (numOfLikes, type) => {
             token = getState().auth.token;
         }
 
-        // Add or remove userId to a specific product when pressing dislike.
         if (type === 'add') {
-            await fetch(dislikeLink(productId, userId, token), {
+            const response = await fetch(dislikeLink(token), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(userName)
+                body: JSON.stringify({
+                    productId: productId,
+                    userId: userId,
+                    userName: userName
+                })
             });
-            dispatch({ type: 'SET_DISLIKED', isDisliked: true });
+            const resData = await response.json();
+            console.log("@@@@22", resData);
+            const firebaseKey = resData.name;
+            dispatch({ type: 'ADD_DISLIKED_PRODUCT', dislikedProduct: { firebaseKey: firebaseKey, productId: productId } });
         }
         else {
-            await fetch(dislikeLink(productId, userId, token), {
+            await fetch(unDislikeLink(firebaseKey, token), {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
                 },
             });
-            dispatch({ type: 'SET_DISLIKED', isDisliked: false });
+            dispatch({ type: 'REMOVE_DISLIKED_PRODUCT', productId: productId });
         }
 
-        // update the number of likes in the product object.
         await fetch(updateProductLink(productId, token), {
             method: 'PATCH',
             body: JSON.stringify({
-                dislikes: numOfLikes
+                likes: numOfDislikes
             })
         })
-
     };
 };
 
-export const fetchLikedUsers = () => {
+export const fetchLikedProducts = () => {
     return async (dispatch, getState) => {
 
         const userId = getState().auth.userId;
-        const productId = getState().reviews.currentProductId;
 
-        const response = await fetch(fetchLikedUsersLink(productId, userId));
+
+        const response = await fetch(fetchLikedProductsLink(userId));
 
         const resData = await response.json();
 
-        if (resData !== null) {
-            dispatch({ type: "FETCH_LIKED", isLiked: true });
+        const likedProducts = [];
+        for (const key in resData) {
+            likedProducts.push({ firebaseKey: key, productId: resData[key].productId });
         }
 
-        dispatch({ type: "FETCH_LIKED", isLiked: false });
+        dispatch({ type: 'SET_LIKED_PRODUCTS', likedProducts: likedProducts });
     };
 
 };
 
-export const fetchDislikedUsers = () => {
+export const fetchDislikedProducts = () => {
     return async (dispatch, getState) => {
 
         const userId = getState().auth.userId;
-        const productId = getState().reviews.currentProductId;
 
-        const response = await fetch(fetchDislikedUsersLink(productId, userId));
+        const response = await fetch(fetchDislikedProductsLink(userId));
+
         const resData = await response.json();
 
-        if (resData !== null) {
-            // response !null means that the current user has disliked the product.
-            dispatch({ type: "FETCH_DISLIKED", isDisliked: true });
+        const dislikedProducts = [];
+        for (const key in resData) {
+            dislikedProducts.push({ firebaseKey: key, productId: resData[key].productId });
         }
 
-        dispatch({ type: "FETCH_DISLIKED", isDisliked: false });
+        dispatch({ type: 'SET_DISLIKED_PRODUCTS', dislikedProducts: dislikedProducts });
     };
 };
 

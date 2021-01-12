@@ -7,17 +7,27 @@ import AddToWishlistButton from './ProductButtons/AddToWishListButton';
 import { productStyle } from './Styles';
 import { COLORS } from '../../../constants/colors/colors';
 import { Entypo } from '@expo/vector-icons';
+import { useDispatch } from 'react-redux';
 
 const Product = props => {
 
     const navigation = useNavigation();
     const styles = productStyle();
-    
+    const dispatch = useDispatch();
+
+    const onPressHandler = () => {
+        dispatch({type: 'SET_PRODUCT', product: product});
+        navigation.navigate('ProductScreen', { screen: 'Details', params: { product: props.product }} );
+    };
+
+
     return (
         <TouchableOpacity
             style={{ ...styles.container, ...props.style }}
             activeOpacity={Platform.OS === 'ios' ? 0.7 : 0.8}
-            onPress={() => navigation.navigate('Reviews', { screen: 'Details', params: { product: props.product } })}>
+            onPress={() => navigation.navigate('ProductScreen', { screen: 'Details', params: { product: props.product } })}
+            //onPress={onPressHandler}
+            >
             <ImageBackground resizeMode='contain' style={styles.image} source={{ uri: props.product.images[0] }}>
 
 

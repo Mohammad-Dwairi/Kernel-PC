@@ -1,7 +1,5 @@
 const initialState = {
     currentProductId: null,
-    isLiked: false,
-    isDisliked: false,
     reviews: []
 };
 
@@ -16,18 +14,6 @@ const ReviewsReducer = (state = initialState, action) => {
     }
     else if (action.type === 'LOAD_REVIEWS') {
         return { ...state, reviews: action.reviews }
-    }
-    else if (action.type === 'FETCH_LIKED') {
-        return {...state, isLiked: action.isLiked};
-    }
-    else if (action.type === 'FETCH_DISLIKED') {
-        return {...state, isDisliked: action.isDisliked};
-    }
-    else if (action.type === 'SET_LIKED') {
-        return {...state, isLiked: action.isLiked};
-    }
-    else if (action.type === 'SET_DISLIKED') {
-        return {...state, isDisliked: action.isDisliked};
     }
     return state;
 };

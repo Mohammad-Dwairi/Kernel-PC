@@ -16,7 +16,7 @@ const ProductImages = props => {
 
     return (
         <View style={styles.container}>
-            <ReactionButtons numberOfLikes={props.product.likes} numberOfDislikes={props.product.dislikes}/>
+            <ReactionButtons product={props.product}/>
             <View style={{ flex: 2 }}>
                 <SliderBox
                     images={props.product.images}
