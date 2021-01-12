@@ -3,7 +3,7 @@ import { TouchableOpacity, Dimensions } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { COLORS } from '../../../../constants/colors/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToWishlist, removeFromWishlist } from '../../../../store/actions/actions';
+import { addToWishlist, removeFromWishlist } from '../../../../store/actions/WishlistActions';
 import Toast from 'react-native-toast-message';
 import { addToWishlistStyle } from '../Styles';
 

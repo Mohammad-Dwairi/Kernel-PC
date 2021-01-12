@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, ScrollView, KeyboardAvoidingView, View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import AppButton from '../components/SharedComponents/Atomic/AppButton';
 import Input from '../components/UserSignupScreenComponents/Input';
 import { COLORS } from '../constants/colors/colors';
-import { LinearGradient } from 'expo-linear-gradient';
 import AppText from '../components/SharedComponents/Atomic/AppText';
 import Container from '../components/SharedComponents/Atomic/Container';
-import { login } from '../store/actions/actions';
+import { login } from '../store/actions/AuthActions';
 import { useDispatch } from 'react-redux';
 
 const UserLoginScreen = ({ route, navigation }) => {

@@ -4,8 +4,8 @@ import Container from '../components/SharedComponents/Atomic/Container';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../components/SharedComponents/Atomic/CustomHeaderButton';
 import ProductsList from '../components/SharedComponents/ProductsList';
-import { fetchWishlist } from '../store/actions/actions';
-import { ActivityIndicator, View } from 'react-native';
+import { fetchWishlist } from '../store/actions/WishlistActions';
+import { ActivityIndicator } from 'react-native';
 import { COLORS } from '../constants/colors/colors';
 import EmptyScreenText from '../components/SharedComponents/Atomic/EmptyScreenText';
 import UserNameBadge from '../components/SharedComponents/Atomic/UserNameBadge';
@@ -15,7 +15,7 @@ const WishlistScreen = ({ route, navigation }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const products = useSelector(state => state.wishlist.products).map(product => product.product);
-    
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -41,7 +41,7 @@ const WishlistScreen = ({ route, navigation }) => {
             ),
             headerRight: () => (
                 <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-                   <UserNameBadge onPress={() => navigation.navigate('UserProfileScreen')}/>
+                    <UserNameBadge onPress={() => navigation.navigate('UserProfileScreen')} />
                 </HeaderButtons>
             )
         });
@@ -65,7 +65,7 @@ const WishlistScreen = ({ route, navigation }) => {
 
     return (
         <Container>
-            {products.length === 0 ? empty : <ProductsList products={products} refreshing={isRefreshing} onRefresh={refreshWishlist}/>}
+            {products.length === 0 ? empty : <ProductsList products={products} refreshing={isRefreshing} onRefresh={refreshWishlist} />}
         </Container>
     );
 

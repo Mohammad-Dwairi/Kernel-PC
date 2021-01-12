@@ -1,12 +1,13 @@
 import React, { useEffect, useLayoutEffect, useCallback, useState } from 'react';
-import { StyleSheet, ScrollView, Button, View, ActivityIndicator } from "react-native";
+import { StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../components/SharedComponents/Atomic/CustomHeaderButton';
 import { useSelector, useDispatch } from 'react-redux';
 import TopList from '../components/HomeScreenComponents/TopHorizontalList/TopList';
 import Grid from '../components/HomeScreenComponents/CategoriesGrid/Grid';
 import Container from '../components/SharedComponents/Atomic/Container';
-import { fetchDislikedProducts, fetchLikedProducts, fetchSpecialProducts, fetchWishlist } from '../store/actions/actions';
+import { fetchWishlist } from '../store/actions/WishlistActions';
+import { fetchDislikedProducts, fetchLikedProducts, fetchSpecialProducts } from '../store/actions/ProductsActions';
 import UserNameBadge from '../components/SharedComponents/Atomic/UserNameBadge';
 import { COLORS } from '../constants/colors/colors';
 
@@ -30,7 +31,7 @@ const HomeScreen = ({ route, navigation }) => {
         dispatch(fetchWishlist());
     }, [dispatch]);
 
-    useEffect(() => {  
+    useEffect(() => {
         fetchSpecials();
     }, [dispatch]);
 

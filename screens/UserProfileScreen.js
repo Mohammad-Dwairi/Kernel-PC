@@ -1,12 +1,11 @@
-import React, { useLayoutEffect, useState, useEffect } from 'react';
-import { Image, KeyboardAvoidingView, StyleSheet, View, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useLayoutEffect, useState } from 'react';
+import { Image, StyleSheet, View, TextInput, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import Container from '../components/SharedComponents/Atomic/Container';
 import AppText from '../components/SharedComponents/Atomic/AppText';
 import { useDispatch, useSelector } from 'react-redux';
-import AppButton from '../components/SharedComponents/Atomic/AppButton';
 import { COLORS } from '../constants/colors/colors';
 import { Entypo } from '@expo/vector-icons';
-import { changeUserName } from '../store/actions/actions';
+import { changeUserName } from '../store/actions/AuthActions';
 const UserProfileScreen = ({ route, navigation }) => {
     const userName = useSelector(state => state.auth.userName);
     const email = useSelector(state => state.auth.email);

@@ -5,7 +5,7 @@ import Container from '../components/SharedComponents/Atomic/Container';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../components/SharedComponents/Atomic/CustomHeaderButton';
 import ProductsList from '../components/SharedComponents/ProductsList';
-import { fetchProducts } from '../store/actions/actions';
+import { fetchProducts } from '../store/actions/ProductsActions';
 import { COLORS } from '../constants/colors/colors';
 import EmptyScreenText from '../components/SharedComponents/Atomic/EmptyScreenText';
 import UserNameBadge from '../components/SharedComponents/Atomic/UserNameBadge';

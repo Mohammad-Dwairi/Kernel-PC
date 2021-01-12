@@ -4,7 +4,7 @@ import { ActivityIndicator, Alert } from 'react-native';
 import { COLORS } from '../constants/colors/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { authenticateUser, refreshExpiredToken } from '../store/actions/actions';
+import { authenticateUser, refreshExpiredToken } from '../store/actions/AuthActions';
 
 const StartupScreen = ({ route, navigation }) => {
     const dispatch = useDispatch();

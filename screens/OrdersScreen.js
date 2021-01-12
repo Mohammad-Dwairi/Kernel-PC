@@ -5,7 +5,7 @@ import CustomHeaderButton from "../components/SharedComponents/Atomic/CustomHead
 import { useDispatch, useSelector } from 'react-redux';
 import OrdersList from '../components/OrdersScreenComponents/OrdersList/OrdersList';
 import EmptyScreenText from '../components/SharedComponents/Atomic/EmptyScreenText';
-import { fetchOrders } from '../store/actions/actions';
+import { fetchOrders } from '../store/actions/OrdersActions';
 import { ActivityIndicator } from 'react-native';
 import { COLORS } from '../constants/colors/colors';
 import UserNameBadge from '../components/SharedComponents/Atomic/UserNameBadge';

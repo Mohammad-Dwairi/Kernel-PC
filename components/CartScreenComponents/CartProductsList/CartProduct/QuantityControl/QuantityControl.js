@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import AppText from '../../../../SharedComponents/Atomic/AppText';
-import { increaseQuantity, decreaseQuantity } from '../../../../../store/actions/actions';
+import { increaseQuantity, decreaseQuantity } from '../../../../../store/actions/CartActions';
 import { quantityControlStyle } from '../../../Styles';
 import { COLORS } from '../../../../../constants/colors/colors';
 

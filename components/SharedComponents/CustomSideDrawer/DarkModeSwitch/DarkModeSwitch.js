@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Switch } from 'react-native';
 import AppText from '../../Atomic/AppText';
 import { useDispatch, useSelector } from 'react-redux';
-import { setDark } from '../../../../store/actions/actions';
+import { setDark } from '../../../../store/actions/AppActions';
 import { COLORS } from '../../../../constants/colors/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { darkModeSwitchStyle } from '../Styles';

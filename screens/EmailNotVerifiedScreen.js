@@ -5,7 +5,7 @@ import AppButton from '../components/SharedComponents/Atomic/AppButton';
 import AppText from '../components/SharedComponents/Atomic/AppText';
 import Container from '../components/SharedComponents/Atomic/Container';
 import { COLORS } from '../constants/colors/colors';
-import { login, resendVerificationLink } from '../store/actions/actions';
+import { login, resendVerificationLink } from '../store/actions/AuthActions';
 const EmailNotVerifiedScreen = ({ route, navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false);

@@ -6,7 +6,7 @@ import AppText from '../../SharedComponents/Atomic/AppText';
 import AppButton from '../../SharedComponents/Atomic/AppButton';
 import CartSummaryRow from './CartSummaryRow/CartSummaryRow';
 import { useDispatch } from 'react-redux';
-import { addOrder} from '../../../store/actions/actions';
+import { addOrder} from '../../../store/actions/OrdersActions';
 import EmptyScreenText from '../../SharedComponents/Atomic/EmptyScreenText';
 import { useNavigation } from '@react-navigation/native';
 import { cartSummaryStyle } from '../Styles';

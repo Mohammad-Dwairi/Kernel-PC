@@ -6,7 +6,6 @@ import AddToCartButton from './ProductButtons/AddToCartButton';
 import AddToWishlistButton from './ProductButtons/AddToWishListButton';
 import { productStyle } from './Styles';
 import { COLORS } from '../../../constants/colors/colors';
-import { Entypo } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux';
 
 const Product = props => {

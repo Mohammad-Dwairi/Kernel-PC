@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import AppText from '../SharedComponents/Atomic/AppText';
 import { AntDesign } from '@expo/vector-icons';
 import { productImagesStyle } from './Styles';
 import { COLORS } from '../../constants/colors/colors';
-import { dislike, like } from '../../store/actions/actions';
+import { dislike, like } from '../../store/actions/ProductsActions';
 
 const ReactionButtons = props => {
 

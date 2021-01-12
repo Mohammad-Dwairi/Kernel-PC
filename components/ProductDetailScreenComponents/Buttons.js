@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../../constants/colors/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart, addToWishlist, removeFromWishlist } from '../../store/actions/actions';
+import { addToCart } from '../../store/actions/CartActions';
+import { addToWishlist, removeFromWishlist } from '../../store/actions/WishlistActions';
 import Toast from 'react-native-toast-message';
 
 const Buttons = props => {
@@ -42,7 +43,7 @@ const Buttons = props => {
                 text1: 'Removed from your cart',
                 text2: 'You can view your products in the cart tab.'
             });
-            
+
         }
         else {
             Toast.show({

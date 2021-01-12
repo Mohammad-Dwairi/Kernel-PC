@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { FlatList, RefreshControl } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { COLORS } from '../../../constants/colors/colors';
-import { fetchOrders } from '../../../store/actions/actions';
+import { fetchOrders } from '../../../store/actions/OrdersActions';
 import OrderCard from './OrderCard/OrderCard';
 
 const OrdersList = props => {

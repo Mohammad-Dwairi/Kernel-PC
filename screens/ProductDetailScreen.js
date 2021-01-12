@@ -8,8 +8,9 @@ import CustomHeaderButton from '../components/SharedComponents/Atomic/CustomHead
 import Container from '../components/SharedComponents/Atomic/Container';
 import Buttons from '../components/ProductDetailScreenComponents/Buttons';
 const ProductDetailScreen = ({ route, navigation }) => {
+
+
     const product = route.params.product;
-    console.log(product.id);
     const dispatch = useDispatch();
     useEffect(() => {
         //needed to determine the product id when adding new review, (don't know how to pass it with navigation!)

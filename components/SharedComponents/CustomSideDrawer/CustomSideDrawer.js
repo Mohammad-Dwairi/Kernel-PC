@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image } from 'react-native';
+import { Image } from 'react-native';
 import DarkModeSwitch from './DarkModeSwitch/DarkModeSwitch';
 import AppText from '../Atomic/AppText';
 import { COLORS } from '../../../constants/colors/colors';

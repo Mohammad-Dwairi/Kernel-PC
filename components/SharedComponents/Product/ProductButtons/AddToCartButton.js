@@ -3,7 +3,7 @@ import { TouchableOpacity, Dimensions } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { COLORS } from '../../../../constants/colors/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../../../../store/actions/actions';
+import { addToCart } from '../../../../store/actions/CartActions';
 import Toast from 'react-native-toast-message';
 import { addToCartStyle } from '../Styles';
 

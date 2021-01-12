@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import AppText from '../../SharedComponents/Atomic/AppText';
 import { reviewInputStyle } from '../Styles';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS } from '../../../constants/colors/colors';
 import Review from '../../../models/Review';
-import { addReview } from '../../../store/actions/actions';
+import { addReview } from '../../../store/actions/ProductsActions';
 
 const ReviewInput = props => {
 

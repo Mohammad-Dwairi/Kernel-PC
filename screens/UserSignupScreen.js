@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, View, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { Image, ScrollView, View, StyleSheet, ActivityIndicator } from 'react-native';
 import AppButton from '../components/SharedComponents/Atomic/AppButton';
 import Input from '../components/UserSignupScreenComponents/Input';
 import { COLORS } from '../constants/colors/colors';
-import { LinearGradient } from 'expo-linear-gradient';
 import AppText from '../components/SharedComponents/Atomic/AppText';
-import Container from '../components/SharedComponents/Atomic/Container';
-import DarkModeSwitch from '../components/SharedComponents/CustomSideDrawer/DarkModeSwitch/DarkModeSwitch';
 import { useDispatch, useSelector } from 'react-redux';
-import { signup, login } from '../store/actions/actions';
+import { signup } from '../store/actions/AuthActions';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 const UserSignupScreen = ({ route, navigation }) => {

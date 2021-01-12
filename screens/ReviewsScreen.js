@@ -6,7 +6,7 @@ import ReviewInput from '../components/ReviewsScreenComponents/Review/ReviewInpu
 import KeyboardSpacer from 'react-native-keyboard-spacer';
 import { ActivityIndicator, Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { fetchReviews } from '../store/actions/actions';
+import { fetchReviews } from '../store/actions/ProductsActions';
 import { COLORS } from '../constants/colors/colors';
 const ReviewsScreen = props => {
 
