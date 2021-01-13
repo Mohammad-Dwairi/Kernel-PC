@@ -31,12 +31,11 @@ const TopList = props => {
         catch (err) {
 
         }
-
     };
 
     interval = setInterval(() => {
         scrollToIndex();
-    }, 2500);
+    }, 1500);
 
 
     return (
@@ -46,7 +45,7 @@ const TopList = props => {
                 ref={list}
                 horizontal={true}
                 onTouchStart={() => clearInterval(interval)}
-                //ItemSeparatorComponent={ItemSeprator}
+                onTouchEnd={() => interval = setInterval(() => scrollToIndex(), 2000)}
                 pagingEnabled={true}
                 showsHorizontalScrollIndicator={false}
                 removeClippedSubviews={true}

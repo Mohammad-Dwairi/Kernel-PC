@@ -5,6 +5,7 @@ export const topListStyle = () => {
 
     const styles = StyleSheet.create({
         container: {
+           
             //height: Dimensions.get('screen').height / 2.7,
             //maxHeight: 300,
             //minHeight: 210

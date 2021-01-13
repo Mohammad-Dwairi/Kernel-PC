@@ -10,7 +10,6 @@ import { dislike, like } from '../../store/actions/ProductsActions';
 const ReactionButtons = props => {
 
     const dispatch = useDispatch();
-
     const productId = props.product.id;
 
     const [product, setProduct] = useState(props.product); // To target re-render when changing the number of likes or dislikes.

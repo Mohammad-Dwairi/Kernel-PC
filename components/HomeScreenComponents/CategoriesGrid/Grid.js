@@ -10,10 +10,10 @@ import { gridStyle } from '../Styles';
 const renderRow = rowNumber => {
     const item1 = CATEGORIES[2 * rowNumber];
     const item2 = CATEGORIES[2 * rowNumber + 1];
-    
+
     if (rowNumber == 3) {
         return CATEGORIES.slice(6).map(item => <Card
-            style={{width: Dimensions.get('screen').width / 1.8, maxWidth: 250, height: Dimensions.get('screen').height / 5, minHeight: 150, maxHeight: 200, marginBottom: 10}}
+            style={{ width: Dimensions.get('screen').width / 1.8, maxWidth: 250, height: Dimensions.get('screen').height / 5, minHeight: 150, maxHeight: 200, marginBottom: 10 }}
             id={item.id}
             key={item.id}
             name={item.name}
