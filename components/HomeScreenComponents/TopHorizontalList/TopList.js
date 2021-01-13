@@ -1,19 +1,16 @@
-import React, { useEffect, useRef } from 'react';
-import { View, FlatList, TouchableWithoutFeedback } from 'react-native';
+import React, { useRef } from 'react';
+import { View, FlatList } from 'react-native';
 import Product from '../../SharedComponents/Product/Product';
 import AppText from '../../SharedComponents/Atomic/AppText';
 import { topListStyle } from '../Styles';
 import { useSelector } from 'react-redux';
-import AppButton from '../../SharedComponents/Atomic/AppButton';
 
 
-const ItemSeprator = () => (
-    <View style={{ width: 20 }} />
-);
 // Contains special products on the top of HomeScreen.
 const TopList = props => {
     let index = 0;
     let interval;
+    let timer;
     const list = useRef();
 
     const darkMode = useSelector(state => state.darkMode.isDark);
@@ -35,7 +32,7 @@ const TopList = props => {
 
     interval = setInterval(() => {
         scrollToIndex();
-    }, 1500);
+    }, 3000);
 
 
     return (
@@ -45,7 +42,7 @@ const TopList = props => {
                 ref={list}
                 horizontal={true}
                 onTouchStart={() => clearInterval(interval)}
-                onTouchEnd={() => interval = setInterval(() => scrollToIndex(), 2000)}
+                onTouchEnd={() => timer = setTimeout(() => interval = setInterval(() => { clearTimeout(timer); scrollToIndex()}, 3000), 8000)}
                 pagingEnabled={true}
                 showsHorizontalScrollIndicator={false}
                 removeClippedSubviews={true}
