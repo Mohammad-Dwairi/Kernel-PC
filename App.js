@@ -10,6 +10,7 @@ import CartReducer from './store/reducers/CartReducer';
 import OrdersReducer from './store/reducers/OrdersReducer';
 import WishlistReducer from './store/reducers/WishlistReducer';
 import AuthReducer from './store/reducers/AuthReducer';
+import UserReducer from './store/reducers/UserReducer';
 import ReviewsReducer from './store/reducers/ReviewsReducer';
 import { NavigationContainer } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
@@ -42,6 +43,7 @@ export default function App() {
     orders: OrdersReducer,
     wishlist: WishlistReducer,
     auth: AuthReducer,
+    user: UserReducer,
     reviews: ReviewsReducer,
   }
   );

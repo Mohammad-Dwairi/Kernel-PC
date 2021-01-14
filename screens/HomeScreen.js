@@ -10,6 +10,7 @@ import { fetchWishlist } from '../store/actions/WishlistActions';
 import { fetchDislikedProducts, fetchLikedProducts, fetchSpecialProducts } from '../store/actions/ProductsActions';
 import UserNameBadge from '../components/SharedComponents/Atomic/UserNameBadge';
 import { COLORS } from '../constants/colors/colors';
+import { setUserInfo } from '../store/actions/UserActions';
 
 const HomeScreen = ({ route, navigation }) => {
 
@@ -46,6 +47,10 @@ const HomeScreen = ({ route, navigation }) => {
     useEffect(() => {
         dispatch(fetchDislikedProducts());
     }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(setUserInfo());
+    }, [dispatch])
 
     // React-Navigation listener,
     // when HomeScreen goes out of foucs, it will refresh the current special products in order to make them synchronized as much as possible.

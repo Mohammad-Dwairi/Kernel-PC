@@ -8,8 +8,9 @@ export const inputStyles = (darkMode) => {
             marginVertical: 30
         },
         input: {
-            padding: 10,
-            fontSize: 18,
+            margin: 5,
+            padding: 7,
+            fontSize: 16,
             borderBottomWidth: 1,
             borderBottomColor: darkMode ? COLORS.primary : COLORS.dark,
             color: darkMode ? COLORS.accent : COLORS.text,

@@ -21,6 +21,10 @@ const UserSignupScreen = ({ route, navigation }) => {
 
     const [assertionPassword, setAssertionPassword] = useState('');
 
+    const [phoneNumber, setPhoneNumber] = useState('');
+
+    const [address, setAddress] = useState('');
+
 
     const [isLoading, setIsLoading] = useState(false);
 
@@ -100,7 +104,7 @@ const UserSignupScreen = ({ route, navigation }) => {
         try {
             setIsLoading(true);
             await dispatch(signup(email, username, password));
-            navigation.navigate('Verification', {password: password, email: email, userName: username});
+            navigation.navigate('Verification', { password: password, email: email, userName: username, phoneNumber: phoneNumber, address: address });
         }
         catch (err) {
             console.log(err);
@@ -116,12 +120,14 @@ const UserSignupScreen = ({ route, navigation }) => {
     return (
         <ScrollView style={{ backgroundColor: darkMode ? COLORS.dark : COLORS.light }}>
             <View style={{ flex: 1, alignItems: 'center' }}>
-            <Image style={{ width: 155, height: 47, marginVertical: 50 }} source={require('../assets/logo.png')} />
-                <AppText style={{color: 'crimson', textAlign: 'center'}}>{errorText}</AppText>
+                <Image style={{ width: 155, height: 47, marginVertical: 50 }} source={require('../assets/logo.png')} />
+                <AppText style={{ color: 'crimson', textAlign: 'center' }}>{errorText}</AppText>
                 <View style={styles.input}>
+                    <AppText style={{ fontFamily: 'good-times' }}>Email</AppText>
                     <Input
+                        icon='mail'
                         selectionColor={COLORS.primary}
-                        placeholder='Email'
+                        placeholder='user@example.com'
                         keyboardType='email-address'
                         autoCapitalize='none'
                         selectTextOnFocus={false}
@@ -133,9 +139,11 @@ const UserSignupScreen = ({ route, navigation }) => {
                 </View>
 
                 <View style={styles.input}>
+                    <AppText style={{ fontFamily: 'good-times' }}>UserName</AppText>
                     <Input
+                        icon='user'
                         selectionColor={COLORS.primary}
-                        placeholder='User Name'
+                        placeholder='At least 4 Characters'
                         autoCapitalize='none'
                         selectTextOnFocus={false}
                         maxLength={90}
@@ -146,9 +154,40 @@ const UserSignupScreen = ({ route, navigation }) => {
                 </View>
 
                 <View style={styles.input}>
+                    <AppText style={{ fontFamily: 'good-times' }}>Phone Number</AppText>
                     <Input
+                    icon='mobile'
                         selectionColor={COLORS.primary}
-                        placeholder='Password'
+                        keyboardType='phone-pad'
+                        autoCapitalize='none'
+                        selectTextOnFocus={false}
+                        maxLength={20}
+                        value={phoneNumber}
+                        onChangeText={(text) => setPhoneNumber(text)}
+                    />
+                    {/* {validateEmail() && !inital ? <AppText style={{ alignSelf: 'center', color: 'crimson' }}>Invalid email address</AppText> : null} */}
+                </View>
+
+                <View style={styles.input}>
+                    <AppText style={{ fontFamily: 'good-times' }}>Address</AppText>
+                    <Input
+                    icon='location-pin'
+                        selectionColor={COLORS.primary}
+                        placeholder='Country, City'
+                        autoCapitalize='none'
+                        selectTextOnFocus={false}
+                        maxLength={50}
+                        value={address}
+                        onChangeText={(text) => setAddress(text)}
+                    />
+                    {/* {validateEmail() && !inital ? <AppText style={{ alignSelf: 'center', color: 'crimson' }}>Invalid email address</AppText> : null} */}
+                </View>
+
+                <View style={styles.input}>
+                    <AppText style={{ fontFamily: 'good-times' }}>Password</AppText>
+                    <Input
+                    icon='lock'
+                        selectionColor={COLORS.primary}
                         autoCapitalize='none'
                         returnKeyType='next'
                         autoCorrect={false}
@@ -161,13 +200,14 @@ const UserSignupScreen = ({ route, navigation }) => {
                     {validatePassword() && !inital ?
                         <AppText style={{ alignSelf: 'center', color: 'crimson', textAlign: 'center' }}>
                             Your password must be at least 5 characters including numbers and capital letters.
-                            </AppText> : null}
+                        </AppText> : null}
                 </View>
 
                 <View style={styles.input}>
+                    <AppText style={{ fontFamily: 'good-times' }}>Confirm Password</AppText>
                     <Input
+                    icon='lock'
                         selectionColor={COLORS.primary}
-                        placeholder='Re-Enter Password'
                         autoCapitalize='none'
                         returnKeyType='go'
                         maxLength={50}
@@ -179,7 +219,7 @@ const UserSignupScreen = ({ route, navigation }) => {
                     {validateAssertionPassword() && !inital ?
                         <AppText style={{ alignSelf: 'center', color: 'crimson', textAlign: 'center' }}>
                             Passwords are not identical
-                            </AppText> : null}
+                        </AppText> : null}
                 </View>
                 <AppButton style={{ width: '50%', marginBottom: 90 }} title='Signup' onPress={submitHandler}>
                     {isLoading ? <ActivityIndicator size='small' color={COLORS.accent} style={{ paddingRight: 15 }} /> : null}

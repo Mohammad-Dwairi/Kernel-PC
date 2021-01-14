@@ -43,11 +43,13 @@ const UserLoginScreen = ({ route, navigation }) => {
                 <KeyboardAvoidingView behavior='position'>
                     <View style={{ flex: 1, alignItems: 'center' }}>
                         <Image style={{ width: 155, height: 47, marginVertical: 50 }} source={require('../assets/logo.png')} />
-                        <AppText style={{color: 'crimson'}}>{errorText}</AppText>
+                        <AppText style={{ color: 'crimson' }}>{errorText}</AppText>
                         <View style={styles.input}>
+                            <AppText style={{ fontFamily: 'good-times' }}>Email</AppText>
                             <Input
+                            icon='mail'
                                 selectionColor={COLORS.primary}
-                                placeholder='Email'
+                                //placeholder='Email'
                                 keyboardType='email-address'
                                 autoCapitalize='none'
                                 maxLength={90}
@@ -57,9 +59,11 @@ const UserLoginScreen = ({ route, navigation }) => {
                         </View>
 
                         <View style={styles.input}>
+                            <AppText style={{ fontFamily: 'good-times' }}>Password</AppText>
                             <Input
+                                icon='lock'
                                 selectionColor={COLORS.primary}
-                                placeholder='Password'
+                                //placeholder='Password'
                                 autoCapitalize='none'
                                 maxLength={50}
                                 secureTextEntry={true}

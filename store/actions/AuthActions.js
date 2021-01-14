@@ -122,6 +122,7 @@ export const login = (email, password) => {
                 email: loginData.email,
                 userName: loginData.displayName
             });
+            
             saveDataToStorage(loginData.idToken, loginData.refreshToken, expirationTime);
         }
         else {
@@ -235,38 +236,3 @@ export const refreshExpiredToken = (refreshToken) => {
 
 };
 
-export const changeUserName = (userName) => {
-    return async (dispatch, getState) => {
-
-        let token = getState().auth.token;
-
-        const expirationTime = getState().auth.expirationTime;
-        const expiryDate = new Date(expirationTime);
-
-        if (expiryDate <= new Date()) {
-            const userData = await AsyncStorage.getItem('userData');
-            const userDataObj = JSON.parse(userData);
-            dispatch(refreshExpiredToken(userDataObj.refreshToken, userDataObj.email, userDataObj.userName));
-            token = getState().auth.token;
-        }
-
-        const response = await fetch(updateUserDataLink, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                idToken: token,
-                displayName: userName,
-                photoUrl: '',
-                returnSecureToken: true
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error('An error occured while changing your user name, please try again later');
-        }
-
-        dispatch({ type: 'CHANGE_USER_NAME', userName: userName });
-    };
-}; 

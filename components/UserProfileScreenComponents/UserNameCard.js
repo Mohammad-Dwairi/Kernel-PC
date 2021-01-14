@@ -3,7 +3,7 @@ import { userNameCardStyles } from './Styles';
 import { View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons';
-import { changeUserName } from '../../store/actions/AuthActions';
+import { changeUserName } from '../../store/actions/UserActions';
 import { validateUsername } from '../../validation/UserNameValidation';
 import AppText from '../SharedComponents/Atomic/AppText';
 import { COLORS } from '../../constants/colors/colors';

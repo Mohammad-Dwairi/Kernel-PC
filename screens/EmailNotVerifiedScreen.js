@@ -6,18 +6,24 @@ import AppText from '../components/SharedComponents/Atomic/AppText';
 import Container from '../components/SharedComponents/Atomic/Container';
 import { COLORS } from '../constants/colors/colors';
 import { login, resendVerificationLink } from '../store/actions/AuthActions';
+import { uploadUserInfo } from '../store/actions/UserActions';
 const EmailNotVerifiedScreen = ({ route, navigation }) => {
 
     const [isLoading, setIsLoading] = useState(false);
 
     const email = route.params.email;
     const password = route.params.password;
+    const userName = route.params.userName;
+    const phoneNumber = route.params.phoneNumber;
+    const address = route.params.address;
 
     const dispatch = useDispatch();
+
     const verifyEmailHandler = async () => {
         try {
             setIsLoading(true);
             await dispatch(login(email, password));
+            await dispatch(uploadUserInfo(userName, phoneNumber, address));
         }
         catch (err) {
             setIsLoading(false);
