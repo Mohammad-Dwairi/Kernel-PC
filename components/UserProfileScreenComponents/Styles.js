@@ -35,7 +35,7 @@ export const userNameCardStyles = (darkMode) => {
         userNameText: {
             minWidth: 100,
             color: COLORS.primary,
-            fontSize: 20,
+            fontSize: 24,
             fontFamily: 'open-sans-b',
         },
     });

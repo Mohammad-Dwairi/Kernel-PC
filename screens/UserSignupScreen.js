@@ -1,100 +1,45 @@
 import React, { useState } from 'react';
 import { Image, ScrollView, View, StyleSheet, ActivityIndicator } from 'react-native';
 import AppButton from '../components/SharedComponents/Atomic/AppButton';
-import Input from '../components/UserSignupScreenComponents/Input';
 import { COLORS } from '../constants/colors/colors';
 import AppText from '../components/SharedComponents/Atomic/AppText';
 import { useDispatch, useSelector } from 'react-redux';
 import { signup } from '../store/actions/AuthActions';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
+import AppTextInput from '../components/SharedComponents/Atomic/AppTextInput';
+import { validateEmail } from '../validation/EmailValidation';
+import { validateUsername } from '../validation/UserNameValidation';
+import { validateConfirmationPassword, validatePassword } from '../validation/PasswordValidation';
+import Container from '../components/SharedComponents/Atomic/Container';
 
 const UserSignupScreen = ({ route, navigation }) => {
+
     const dispatch = useDispatch();
+    const darkMode = useSelector(state => state.darkMode.isDark);
+
     const [email, setEmail] = useState('');
-
-
-    const [username, setUsername] = useState('');
-
-
-    const [password, setPassword] = useState('');
-
-
-    const [assertionPassword, setAssertionPassword] = useState('');
-
+    const [userName, setUsername] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-
     const [address, setAddress] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
 
     const [isLoading, setIsLoading] = useState(false);
-
-    const [inital, setInitial] = useState(true);
-
+    const [initial, setInitial] = useState(true);
     const [errorText, setErrorText] = useState('');
 
-    const validateEmail = () => {
-        if (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
-
-    const validateUsername = () => {
-
-        if (username.length < 3 || username.length > 25) {
-            return true;
-        }
-        else if (username.trim() === '') {
-            return true;
-        }
-        else if (/^\d+$/.test(username)) {
-            // if full numric
-            return true;
-        }
-        else if (!isNaN(username.charAt(0))) {
-            // if starts with number
-            return true;
-        }
-        else {
-            for (let i = 0; i < username.length; i++) {
-                let asci = username.charCodeAt(i);
-                let char = username.charAt(i);
-                if (char === ' ' || char === '-' || char === '_') {
-                    continue;
-                }
-                if ((asci < 48) || (asci > 57 && asci < 65) || (asci > 90 && asci < 97) || (asci > 122)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
-
-    const validatePassword = () => {
-        if (/^(?=.*[0-9])(?=.*[A-Z])(?=.{5,})/.test(password)) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
-
-    const validateAssertionPassword = () => {
-        if (password === assertionPassword) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
-
     const submitHandler = () => {
-        if (inital) {
+        if (initial) {
             setInitial(false);
         }
-        const hasError = validateEmail() || validateUsername() || validatePassword() || validateAssertionPassword();
+        const hasError = (
+            !validateEmail(email)
+            && !validateUsername(userName)
+            && !validatePassword(password)
+            && !validateConfirmationPassword(confirmPassword)
+        );
+
         if (!hasError) {
             signupHandler();
         }
@@ -103,140 +48,141 @@ const UserSignupScreen = ({ route, navigation }) => {
     const signupHandler = async () => {
         try {
             setIsLoading(true);
-            await dispatch(signup(email, username, password));
-            navigation.navigate('Verification', { password: password, email: email, userName: username, phoneNumber: phoneNumber, address: address });
+            await dispatch(signup(email, userName, password));
+
+            navigation.navigate(
+                'Verification',
+                {
+                    password: password,
+                    email: email,
+                    userName: userName,
+                    phoneNumber: phoneNumber,
+                    address: address
+                });
         }
         catch (err) {
             console.log(err);
             setIsLoading(false);
             setErrorText(err.message);
-            //Alert.alert('Error', err.message);
         }
 
     };
 
-    const darkMode = useSelector(state => state.darkMode.isDark);
-
     return (
-        <ScrollView style={{ backgroundColor: darkMode ? COLORS.dark : COLORS.light }}>
-            <View style={{ flex: 1, alignItems: 'center' }}>
-                <Image style={{ width: 155, height: 47, marginVertical: 50 }} source={require('../assets/logo.png')} />
+        <Container>
+            <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false}>
+
+                <Image style={styles.logo} source={require('../assets/logo.png')} />
                 <AppText style={{ color: 'crimson', textAlign: 'center' }}>{errorText}</AppText>
-                <View style={styles.input}>
-                    <AppText style={{ fontFamily: 'good-times' }}>Email</AppText>
-                    <Input
+                <View style={styles.form}>
+                    <AppTextInput
+                        label='Email'
                         icon='mail'
-                        selectionColor={COLORS.primary}
-                        placeholder='user@example.com'
-                        keyboardType='email-address'
-                        autoCapitalize='none'
-                        selectTextOnFocus={false}
-                        maxLength={90}
                         value={email}
-                        onChangeText={(text) => setEmail(text)}
+                        onChangeText={text => setEmail(text)}
+                        autoCapitalize='none'
+                        error={checkEmail(email, initial)}
                     />
-                    {validateEmail() && !inital ? <AppText style={{ alignSelf: 'center', color: 'crimson' }}>Invalid email address</AppText> : null}
-                </View>
 
-                <View style={styles.input}>
-                    <AppText style={{ fontFamily: 'good-times' }}>UserName</AppText>
-                    <Input
+                    <AppTextInput
+                        label='Username'
                         icon='user'
-                        selectionColor={COLORS.primary}
-                        placeholder='At least 4 Characters'
+                        value={userName}
+                        onChangeText={text => setUsername(text)}
                         autoCapitalize='none'
-                        selectTextOnFocus={false}
-                        maxLength={90}
-                        value={username}
-                        onChangeText={(text) => setUsername(text)}
+                        error={checkUserName(userName, initial)}
                     />
-                    {validateUsername() && !inital ? <AppText style={{ alignSelf: 'center', color: 'crimson' }}>Invalid User-Name</AppText> : null}
-                </View>
 
-                <View style={styles.input}>
-                    <AppText style={{ fontFamily: 'good-times' }}>Phone Number</AppText>
-                    <Input
-                    icon='mobile'
-                        selectionColor={COLORS.primary}
-                        keyboardType='phone-pad'
-                        autoCapitalize='none'
-                        selectTextOnFocus={false}
-                        maxLength={20}
+                    <AppTextInput
+                        label='Phone Number'
+                        icon='mobile'
                         value={phoneNumber}
-                        onChangeText={(text) => setPhoneNumber(text)}
-                    />
-                    {/* {validateEmail() && !inital ? <AppText style={{ alignSelf: 'center', color: 'crimson' }}>Invalid email address</AppText> : null} */}
-                </View>
-
-                <View style={styles.input}>
-                    <AppText style={{ fontFamily: 'good-times' }}>Address</AppText>
-                    <Input
-                    icon='location-pin'
-                        selectionColor={COLORS.primary}
-                        placeholder='Country, City'
+                        onChangeText={text => setPhoneNumber(text)}
                         autoCapitalize='none'
-                        selectTextOnFocus={false}
-                        maxLength={50}
+                    />
+
+                    <AppTextInput
+                        label='Address'
+                        icon='location-pin'
                         value={address}
-                        onChangeText={(text) => setAddress(text)}
-                    />
-                    {/* {validateEmail() && !inital ? <AppText style={{ alignSelf: 'center', color: 'crimson' }}>Invalid email address</AppText> : null} */}
-                </View>
-
-                <View style={styles.input}>
-                    <AppText style={{ fontFamily: 'good-times' }}>Password</AppText>
-                    <Input
-                    icon='lock'
-                        selectionColor={COLORS.primary}
+                        onChangeText={text => setAddress(text)}
                         autoCapitalize='none'
-                        returnKeyType='next'
-                        autoCorrect={false}
-                        autoCompleteType='off'
-                        maxLength={50}
-                        secureTextEntry={true}
+                    />
+
+                    <AppTextInput
+                        label='Password'
+                        icon='lock'
                         value={password}
-                        onChangeText={(text) => setPassword(text)}
-                    />
-                    {validatePassword() && !inital ?
-                        <AppText style={{ alignSelf: 'center', color: 'crimson', textAlign: 'center' }}>
-                            Your password must be at least 5 characters including numbers and capital letters.
-                        </AppText> : null}
-                </View>
-
-                <View style={styles.input}>
-                    <AppText style={{ fontFamily: 'good-times' }}>Confirm Password</AppText>
-                    <Input
-                    icon='lock'
-                        selectionColor={COLORS.primary}
-                        autoCapitalize='none'
-                        returnKeyType='go'
-                        maxLength={50}
+                        onChangeText={text => setPassword(text)}
                         secureTextEntry={true}
-                        value={assertionPassword}
-                        onChangeText={(text) => setAssertionPassword(text)}
-                        onEndEditing={validateAssertionPassword}
+                        error={checkPassword(password, initial)}
                     />
-                    {validateAssertionPassword() && !inital ?
-                        <AppText style={{ alignSelf: 'center', color: 'crimson', textAlign: 'center' }}>
-                            Passwords are not identical
-                        </AppText> : null}
+
+                    <AppTextInput
+                        label='Confirm Password'
+                        icon='lock'
+                        value={confirmPassword}
+                        onChangeText={text => setConfirmPassword(text)}
+                        secureTextEntry={true}
+                        error={checkConfirmPassword(password, confirmPassword, initial)}
+                    />
+
+                    <AppButton style={{ width: '50%', marginTop: 20 }} title='Signup' onPress={submitHandler}>
+                        {isLoading ? <ActivityIndicator size='small' color={COLORS.accent} style={{ paddingRight: 15 }} /> : null}
+                    </AppButton>
                 </View>
-                <AppButton style={{ width: '50%', marginBottom: 90 }} title='Signup' onPress={submitHandler}>
-                    {isLoading ? <ActivityIndicator size='small' color={COLORS.accent} style={{ paddingRight: 15 }} /> : null}
-                </AppButton>
-                <KeyboardSpacer topSpacing={-50} />
-            </View>
-        </ScrollView>
 
 
+                <KeyboardSpacer />
+
+            </ScrollView>
+        </Container>
     );
 };
 
+const checkEmail = (email, initial) => {
+    if (!validateEmail(email) && !initial) {
+        return 'Invalid email address';
+    }
+    return null;
+};
+
+const checkUserName = (userName, initial) => {
+    if (!validateUsername(userName) && !initial) {
+        return 'Invalid User-Name';
+    }
+    return null;
+};
+
+const checkPassword = (password, initial) => {
+    if (!validatePassword(password) && !initial) {
+        return 'Password must be at least 5 characters including capital letters and numbers';
+    }
+    return null;
+};
+
+const checkConfirmPassword = (password, confirmPassword, initial) => {
+    if (!validateConfirmationPassword(password, confirmPassword) && !initial) {
+        return 'Passwords do not match';
+    }
+    return null;
+};
+
 const styles = StyleSheet.create({
-    input: {
-        marginBottom: 30,
-        width: '80%'
+    form: {
+        flex: 1,
+        alignItems: 'center',
+        paddingVertical: 20,
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 1 },
+        paddingHorizontal: 20
+    },
+    logo: {
+        width: 200,
+        height: 60,
+        marginVertical: 30,
+        marginLeft: 20,
+        alignSelf: 'center'
     }
 });
-
 export default UserSignupScreen;

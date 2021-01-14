@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Image, ScrollView, KeyboardAvoidingView, View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import { Image, ScrollView, View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import AppButton from '../components/SharedComponents/Atomic/AppButton';
-import Input from '../components/UserSignupScreenComponents/Input';
 import { COLORS } from '../constants/colors/colors';
-import AppText from '../components/SharedComponents/Atomic/AppText';
 import Container from '../components/SharedComponents/Atomic/Container';
 import { login } from '../store/actions/AuthActions';
 import { useDispatch } from 'react-redux';
+import AppTextInput from '../components/SharedComponents/Atomic/AppTextInput';
+import ErrorText from '../components/SharedComponents/Atomic/ErrorText';
+import KeyboardSpacer from 'react-native-keyboard-spacer';
 
 const UserLoginScreen = ({ route, navigation }) => {
+
     const dispatch = useDispatch();
 
     const [email, setEmail] = useState('');
@@ -20,8 +22,6 @@ const UserLoginScreen = ({ route, navigation }) => {
         try {
             setIsLoading(true);
             await dispatch(login(email, password));
-            //navigation.navigate('App');
-
         }
         catch (err) {
             console.log(err);
@@ -31,68 +31,72 @@ const UserLoginScreen = ({ route, navigation }) => {
             }
             else {
                 setErrorText(err.message);
-                //Alert.alert(err.message, null, [{text: 'Try Again', style: 'destructive'}])
             }
         }
-
     };
 
     return (
         <Container>
-            <ScrollView>
-                <KeyboardAvoidingView behavior='position'>
-                    <View style={{ flex: 1, alignItems: 'center' }}>
-                        <Image style={{ width: 155, height: 47, marginVertical: 50 }} source={require('../assets/logo.png')} />
-                        <AppText style={{ color: 'crimson' }}>{errorText}</AppText>
-                        <View style={styles.input}>
-                            <AppText style={{ fontFamily: 'good-times' }}>Email</AppText>
-                            <Input
-                            icon='mail'
-                                selectionColor={COLORS.primary}
-                                //placeholder='Email'
-                                keyboardType='email-address'
-                                autoCapitalize='none'
-                                maxLength={90}
-                                value={email}
-                                onChangeText={(text) => setEmail(text)}
-                            />
-                        </View>
-
-                        <View style={styles.input}>
-                            <AppText style={{ fontFamily: 'good-times' }}>Password</AppText>
-                            <Input
-                                icon='lock'
-                                selectionColor={COLORS.primary}
-                                //placeholder='Password'
-                                autoCapitalize='none'
-                                maxLength={50}
-                                secureTextEntry={true}
-                                value={password}
-                                onChangeText={(text) => setPassword(text)}
-                            />
-                        </View>
-
-                        <AppButton style={{ width: '50%' }} title='Login' onPress={loginHandler}>
-                            {isLoading ? <ActivityIndicator size='small' color={COLORS.light} style={{ marginRight: 15 }} /> : null}
-                        </AppButton>
-
-                        <Text style={{ marginTop: 40, color: 'gray' }}>Not A Member Yet?</Text>
-                        <Text style={{ color: 'gray' }}>Swipe Left To Signup!</Text>
-
-                    </View>
-
-                </KeyboardAvoidingView>
-
+            <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false}>
+                <Image style={styles.logo} source={require('../assets/logo.png')} />
+                <View style={styles.form}>
+                    <AppTextInput
+                        label='Email'
+                        icon='mail'
+                        value={email}
+                        onChangeText={text => setEmail(text)}
+                        autoCapitalize='none'
+                    />
+                    <AppTextInput
+                        label='Password'
+                        icon='lock'
+                        value={password}
+                        onChangeText={text => setPassword(text)}
+                        secureTextEntry={true}
+                    />
+                    <ErrorText>{errorText}</ErrorText>
+                    <AppButton style={styles.loginBtn} title='Login' onPress={loginHandler}>
+                        {isLoading ? <ActivityIndicator size='small' color={COLORS.light} style={styles.loadingLogin} /> : null}
+                    </AppButton>
+                </View>
+                <View style={styles.hintContianer}>
+                    <Text style={styles.hintText}>Not A Member Yet?</Text>
+                    <Text style={styles.hintText}>Swipe Left To Signup!</Text>
+                </View>
+                <KeyboardSpacer />
             </ScrollView>
         </Container>
-
     );
 };
 
 const styles = StyleSheet.create({
-    input: {
-        marginBottom: 30,
-        width: '80%'
+    form: {
+        flex: 1,
+        alignItems: 'center',
+        paddingVertical: 20,
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 1 },
+        paddingHorizontal: 20
+    },
+    loginBtn: {
+        width: '50%'
+    },
+    loadingLogin: {
+        paddingRight: 5
+    },
+    hintContianer: {
+        alignSelf: 'center'
+    },
+    hintText: {
+        color: 'gray',
+        fontSize: 12
+    },
+    logo: {
+        width: 200,
+        height: 60,
+        marginVertical: 30,
+        marginLeft: 20,
+        alignSelf: 'center'
     }
 });
 

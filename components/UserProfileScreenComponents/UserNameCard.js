@@ -38,6 +38,7 @@ const UserNameCard = props => {
                     style={styles.userNameText}
                     onChangeText={(text) => setCurrentUserName(text)}
                     maxLength={25}
+                    multiline={true}
                 />
             </View>
 
@@ -48,7 +49,7 @@ const UserNameCard = props => {
                     <TouchableOpacity onPress={() => validateUsername(currentUserName) ? setGuideText('Invalid User Name') : changeUserNameHandler()} disabled={isLoading}>
                         {
                             isLoading ? <ActivityIndicator color={COLORS.primary} size='small' style={{ alignSelf: 'flex-end' }} /> :
-                                <AppText style={{ fontFamily: 'good-times', color: COLORS.primary, padding: 5, textAlign: 'right' }}>
+                                <AppText style={{ fontFamily: 'good-times', color: COLORS.primary, padding: 5, textAlign: 'right', fontSize: 18 }}>
                                     Apply
                                 </AppText>
                         }

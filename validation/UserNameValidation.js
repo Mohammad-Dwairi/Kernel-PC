@@ -3,18 +3,18 @@
 export const validateUsername = (userName) => {
 
     if (userName.length < 3 || userName.length > 25) {
-        return true;
+        return false;
     }
     else if (userName.trim() === '') {
-        return true;
+        return false;
     }
     else if (/^\d+$/.test(userName)) {
         // if full numric
-        return true;
+        return false;
     }
     else if (!isNaN(userName.charAt(0))) {
         // if starts with number
-        return true;
+        return false;
     }
     else {
         for (let i = 0; i < userName.length; i++) {
@@ -24,9 +24,9 @@ export const validateUsername = (userName) => {
                 continue;
             }
             if ((asci < 48) || (asci > 57 && asci < 65) || (asci > 90 && asci < 97) || (asci > 122)) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 };

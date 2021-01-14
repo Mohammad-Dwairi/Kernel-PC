@@ -9,15 +9,19 @@ const Input = props => {
     const darkMode = useSelector(state => state.darkMode.isDark);
     const styles = inputStyles(darkMode);
 
+    
 
     return (
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-            <Entypo name={props.icon} size={18} color={COLORS.primary}/>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Entypo name={props.icon} size={20} color={COLORS.primary} style={{marginRight: 10}}/>
+            
             <TextInput
                 {...props}
                 style={styles.input}
                 placeholderTextColor={darkMode ? 'gray' : 'lightgray'}
+                
             />
+            
         </View>
     );
 };

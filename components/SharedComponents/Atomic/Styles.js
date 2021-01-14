@@ -70,3 +70,33 @@ export const emptyScreenTextStyle = () => {
     });
     return styles;
 };
+
+export const appTextInputStyles = (darkMode) => {
+    return StyleSheet.create({
+        container: {
+            borderBottomWidth: 1,
+            borderBottomColor: COLORS.accent,
+            width: '100%',
+            padding: 5,
+            marginTop: 15
+        },
+        inputContainer: {
+            flexDirection: 'row',
+            paddingTop: 10
+        },
+        input: {
+            width: '100%',
+            paddingLeft: 10,
+            color: darkMode ? COLORS.accent : COLORS.text
+        },
+        labelContainer: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            height: 25
+        },
+        label: {
+            fontFamily: 'good-times'
+        }
+    });
+};

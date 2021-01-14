@@ -1,10 +1,9 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { View, FlatList } from 'react-native';
 import Product from '../../SharedComponents/Product/Product';
 import AppText from '../../SharedComponents/Atomic/AppText';
 import { topListStyle } from '../Styles';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react/cjs/react.development';
 
 
 // Contains special products on the top of HomeScreen.
