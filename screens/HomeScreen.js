@@ -56,7 +56,7 @@ const HomeScreen = ({ route, navigation }) => {
     // when HomeScreen goes out of foucs, it will refresh the current special products in order to make them synchronized as much as possible.
     // useEffect(() => {
     //     const unsubscribe = navigation.addListener('blur', () => {
-    //         fetchSpecials();
+            
     //     });
     //     return unsubscribe;
     // }, [navigation]);

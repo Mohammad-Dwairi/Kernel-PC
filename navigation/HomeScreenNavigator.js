@@ -4,8 +4,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ProductsScreen from '../screens/ProductsScreen';
 import { useSelector } from 'react-redux';
 import { COLORS } from '../constants/colors/colors';
-import { Dimensions, Image, Platform, View } from 'react-native';
-import AppText from '../components/SharedComponents/Atomic/AppText';
+import { Dimensions, Image, Platform } from 'react-native';
 import ProductNavigator from './ProductNavigator';
 import UserProfileScreen from '../screens/UserProfileScreen';
 

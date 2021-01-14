@@ -4,6 +4,7 @@ import Product from '../../SharedComponents/Product/Product';
 import AppText from '../../SharedComponents/Atomic/AppText';
 import { topListStyle } from '../Styles';
 import { useSelector } from 'react-redux';
+import { useEffect } from 'react/cjs/react.development';
 
 
 // Contains special products on the top of HomeScreen.
@@ -30,9 +31,11 @@ const TopList = props => {
         }
     };
 
-    interval = setInterval(() => {
-        scrollToIndex();
-    }, 3000);
+    useEffect(() => {
+        interval = setInterval(() => {
+            scrollToIndex();
+        }, 4000);
+    }, []);
 
 
     return (
@@ -42,10 +45,10 @@ const TopList = props => {
                 ref={list}
                 horizontal={true}
                 onTouchStart={() => clearInterval(interval)}
-                onTouchEnd={() => timer = setTimeout(() => interval = setInterval(() => { clearTimeout(timer); scrollToIndex()}, 3000), 8000)}
-                pagingEnabled={true}
+                //onTouchMove={() => interval = setInterval(() => {scrollToIndex(); }, 4000)}
+                //pagingEnabled={true}
                 showsHorizontalScrollIndicator={false}
-                removeClippedSubviews={true}
+                //removeClippedSubviews={true}
                 data={props.list}
                 renderItem={renderSpecialProduct}
             />
