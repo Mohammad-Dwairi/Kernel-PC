@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         paddingVertical: 20,
-        shadowOpacity: 0.3,
+        shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 1 },
         paddingHorizontal: 20
     },

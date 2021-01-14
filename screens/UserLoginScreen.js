@@ -46,6 +46,7 @@ const UserLoginScreen = ({ route, navigation }) => {
                         value={email}
                         onChangeText={text => setEmail(text)}
                         autoCapitalize='none'
+                        keyboardType='email-address'
                     />
                     <AppTextInput
                         label='Password'
