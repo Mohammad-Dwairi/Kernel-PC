@@ -11,11 +11,11 @@ import { validateEmail } from '../validation/EmailValidation';
 import { validateUsername } from '../validation/UserNameValidation';
 import { validateConfirmationPassword, validatePassword } from '../validation/PasswordValidation';
 import Container from '../components/SharedComponents/Atomic/Container';
+import ErrorText from '../components/SharedComponents/Atomic/ErrorText';
 
 const UserSignupScreen = ({ route, navigation }) => {
 
     const dispatch = useDispatch();
-    const darkMode = useSelector(state => state.darkMode.isDark);
 
     const [email, setEmail] = useState('');
     const [userName, setUsername] = useState('');
@@ -73,11 +73,12 @@ const UserSignupScreen = ({ route, navigation }) => {
             <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false}>
 
                 <Image style={styles.logo} source={require('../assets/logo.png')} />
-                <AppText style={{ color: 'crimson', textAlign: 'center' }}>{errorText}</AppText>
+                <ErrorText>{errorText}</ErrorText>
                 <View style={styles.form}>
                     <AppTextInput
                         label='Email'
                         icon='mail'
+                        keyboardType='email-address'
                         value={email}
                         onChangeText={text => setEmail(text)}
                         autoCapitalize='none'
@@ -178,8 +179,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     },
     logo: {
-        width: 200,
-        height: 60,
+        width: 185,
+        height: 55,
         marginVertical: 30,
         marginLeft: 20,
         alignSelf: 'center'

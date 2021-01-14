@@ -1,11 +1,10 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import AppText from './AppText';
 import { appTextInputStyles } from './Styles';
 import { useSelector } from 'react-redux';
 import { COLORS } from '../../../constants/colors/colors';
-import { useState } from 'react/cjs/react.development';
 import ErrorText from './ErrorText';
 
 
@@ -43,6 +42,7 @@ const AppTextInput = props => {
                         style={styles.input}
                         selectionColor={COLORS.primary}
                         secureTextEntry={!showPassword && props.secureTextEntry}
+                        
                     />
                 </View>
             </View>
