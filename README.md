@@ -1,6 +1,6 @@
 
 # ![logo](https://user-images.githubusercontent.com/49045447/104659482-605e2880-56cd-11eb-8253-262b62836ff2.png)
-**Kerenl PC - is a PC hardware and accessories store built with React Native and firebase REST API.**
+**Kerenl PC - is a PC hardware and accessories store with more than 15 products categories built with React Native and firebase REST API.**
 
 # Technologies
 Technologies used in this project:
